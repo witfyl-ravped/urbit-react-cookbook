@@ -2051,6 +2051,11 @@
   resolved "https://registry.yarnpkg.com/@types/json5/-/json5-0.0.29.tgz#ee28707ae94e11d2b827bcbe5270bcea7f3e71ee"
   integrity sha1-7ihweulOEdK4J7y+UnC86n8+ce4=
 
+"@types/lodash@^4.14.168":
+  version "4.14.168"
+  resolved "https://registry.yarnpkg.com/@types/lodash/-/lodash-4.14.168.tgz#fe24632e79b7ade3f132891afff86caa5e5ce008"
+  integrity sha512-oVfRvqHV/V6D1yifJbVRU3TMp8OT6o6BG+U9MkwuJ3U8/CsDHvalRpsxBqivn71ztOFZBTfJMvETbqHiaNSj7Q==
+
 "@types/minimatch@*":
   version "3.0.3"
   resolved "https://registry.yarnpkg.com/@types/minimatch/-/minimatch-3.0.3.tgz#3dca0e3f33b200fc7d1139c0cd96c1268cadfd9d"
@@ -2287,6 +2292,22 @@
   dependencies:
     "@typescript-eslint/types" "4.19.0"
     eslint-visitor-keys "^2.0.0"
+
+"@urbit/api@^1.0.1":
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/@urbit/api/-/api-1.0.1.tgz#c10346483f9012bd9220c3db1b7058873dd5b0ee"
+  integrity sha512-HF0n9x6yNaB4IAe5p7e7It32JgiuRMt3nRipiACnpn1E8yEuT0jS+fkTCdE4TzLUmDzl6gWvEDTKlk9q394Dyg==
+  dependencies:
+    "@babel/runtime" "^7.12.5"
+    "@types/lodash" "^4.14.168"
+    "@urbit/eslint-config" "^1.0.0"
+    big-integer "^1.6.48"
+    lodash "^4.17.20"
+
+"@urbit/eslint-config@^1.0.0":
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/@urbit/eslint-config/-/eslint-config-1.0.0.tgz#c2c667fcc3e15be98a98ead73f14a744739e19a0"
+  integrity sha512-Xmzb6MvM7KorlPJEq/hURZZ4BHSVy/7CoQXWogsBSTv5MOZnMqwNKw6yt24k2AO/2UpHwjGptimaNLqFfesJbw==
 
 "@webassemblyjs/ast@1.9.0":
   version "1.9.0"
@@ -3109,6 +3130,11 @@ bfj@^7.0.2:
     check-types "^11.1.1"
     hoopy "^0.1.4"
     tryer "^1.0.1"
+
+big-integer@^1.6.48:
+  version "1.6.48"
+  resolved "https://registry.yarnpkg.com/big-integer/-/big-integer-1.6.48.tgz#8fd88bd1632cba4a1c8c3e3d7159f08bb95b4b9e"
+  integrity sha512-j51egjPa7/i+RdiRuJbPdJ2FIUYYPhvYLjzoYbcMMm62ooO6F94fETG4MTs46zPAF9Brs04OajboA/qTGuz78w==
 
 big.js@^5.2.2:
   version "5.2.2"
