@@ -6,8 +6,9 @@ import { Content, GraphNode } from "@urbit/api";
 
 const createApi = _.memoize(
   (): UrbitInterface => {
-    const urb = new Urbit("http://localhost:80", "lidlut-tabwed-pillex-ridrup");
-    urb.ship = "zod";
+    const urb = new Urbit("http://localhost:80", "ravreb-timsev-nibryc-hoptel");
+    urb.ship = "witfyl-ravped";
+    urb.onError = (message) => console.log(message);
     urb.connect();
     return urb;
   }
@@ -22,6 +23,7 @@ const App = () => {
 
   const subHandler = useCallback(
     (message) => {
+      console.log(message);
       if (!("add-nodes" in message["graph-update"])) return;
       const newNodes: Record<string, GraphNode> =
         message["graph-update"]["add-nodes"]["nodes"];
@@ -62,19 +64,36 @@ const App = () => {
       .then((subscriptionId) => {
         setSub(subscriptionId);
       });
-    urb.subscribe({
-      app: "chanel",
-      path: "/example",
-      event: callback,
-    });
+    // urb.subscribe({
+    //   app: "chanel",
+    //   path: "/example",
+    //   event: callback,
+    // });
     console.log(urb);
   }, [urb, sub, subHandler]);
+
+  // const examplePoke = _.memoize(
+  //   (): UrbitInterface => {
+  //     if (!urb) {
+  //       console.error("Poked before Urbit API initialized");
+  //     }
+  //     urb.poke({
+  //       app: "chanel",
+  //       mark: "chanel-action",
+  //       json: { "increase-counter": { step: 2 } },
+  //     });
+  //     return urb;
+  //   }
+  // );
 
   return (
     <div className="App">
       <header className="App-header">
         <pre>Result: {log}</pre>
-        <pre>{example}</pre>
+        <pre>String from Hoon:{example}</pre>
+        {/* <pre>
+          <button onClick={examplePoke}>Increase Counter</button>
+        </pre> */}
       </header>
     </div>
   );
