@@ -98,9 +98,9 @@ const App = () => {
     );
   }
 
-  function sendMessage() {
+  function sendMessage(message: string) {
     if (!urb || !urb.ship) return;
-    const post = createPost(urb.ship, [{ text: "example text" }]);
+    const post = createPost(urb.ship, [{ text: message }]);
     urb.thread(addPost("~zod", "testing-channel-1161", post));
   }
 
@@ -113,6 +113,11 @@ const App = () => {
             <td>
               <div style={{ justifyContent: "center" }}>
                 <pre>Create Group</pre>
+              </div>
+            </td>
+            <td>
+              <div style={{ justifyContent: "center" }}>
+                <pre>Send Message</pre>
               </div>
             </td>
           </tr>
@@ -146,13 +151,26 @@ const App = () => {
                   />
                 </label>
                 <br />
-                <input type="submit" value="Submit" />
+                <input type="submit" value="Create Group" />
               </form>
             </td>
             <td>
-              <input />
-              <br />
-              <button onClick={sendMessage}>Send Message</button>
+              <form
+                onSubmit={(e: React.SyntheticEvent) => {
+                  e.preventDefault();
+                  const target = e.target as typeof e.target & {
+                    message: { value: string };
+                  };
+                  const message = target.message.value;
+                  sendMessage(message);
+                }}
+              >
+                <label>
+                  <input type="message" name="message" placeholder="Mesage" />
+                </label>
+                <br />
+                <input type="submit" value="Send Message" />
+              </form>
             </td>
           </tr>
         </table>
