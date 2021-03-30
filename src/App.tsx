@@ -60,17 +60,7 @@ const App = () => {
   const groupArray = useCallback(
     (groups) => {
       console.log(groups);
-
       setGroups(Object.keys(groups.groupUpdate.initial));
-
-      // const fetchedGroups: Record<string, Group> =
-      //   groups["groupUpdate"]["initial"];
-      // console.log(fetchedGroups);
-
-      // const fetchedGroupsArray = [];
-      // Object.keys(fetchedGroups).forEach((index) => {
-      //   console.log(fetchedGroups[index]);
-      // });
     },
     [groups]
   );
@@ -170,21 +160,17 @@ const App = () => {
                   createGroupLocal(groupName, description);
                 }}
               >
-                <label>
-                  <input
-                    type="groupName"
-                    name="groupName"
-                    placeholder="Group Name"
-                  />
-                </label>
+                <input
+                  type="groupName"
+                  name="groupName"
+                  placeholder="Group Name"
+                />
                 <br />
-                <label>
-                  <input
-                    type="description"
-                    name="description"
-                    placeholder="Description"
-                  />
-                </label>
+                <input
+                  type="description"
+                  name="description"
+                  placeholder="Description"
+                />
                 <br />
                 <input type="submit" value="Create Group" />
               </form>
