@@ -28,8 +28,6 @@ const App = () => {
   const [urb, setUrb] = useState<UrbitInterface | undefined>();
   const [sub, setSub] = useState<number | undefined>();
   const [log, setLog] = useState<string>("");
-  const [example, setExample] = useState<string>("");
-  // const callback = useCallback(setExample, [setExample]);
 
   const subHandler = useCallback(
     (message) => {
@@ -80,19 +78,22 @@ const App = () => {
     console.log(urb);
   }, [urb, sub, subHandler]);
 
-  function createGroupLocal() {
+  function createGroupLocal(groupName: string, description: string) {
     if (!urb) return;
     urb.thread(
       createGroup(
-        "test-channel-2",
+        groupName
+          .replace(/([a-z])([A-Z])/g, "$1-$2")
+          .replace(/\s+/g, "-")
+          .toLowerCase(),
         {
           open: {
             banRanks: [],
             banned: [],
           },
         },
-        "Test Channel 2",
-        "Testing Channel 2"
+        groupName,
+        description
       )
     );
   }
@@ -107,11 +108,54 @@ const App = () => {
     <div className="App">
       <header className="App-header">
         <pre>Result: {log}</pre>
-        <pre>String from Hoon:{example}</pre>
-        <pre>
-          <button onClick={createGroupLocal}>Create Group</button>
-          <button onClick={sendMessage}>Send Message</button>
-        </pre>
+        <table width="100%">
+          <tr>
+            <td>
+              <div style={{ justifyContent: "center" }}>
+                <pre>Create Group</pre>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <form
+                onSubmit={(e: React.SyntheticEvent) => {
+                  e.preventDefault();
+                  const target = e.target as typeof e.target & {
+                    groupName: { value: string };
+                    description: { value: string };
+                  };
+                  const groupName = target.groupName.value;
+                  const description = target.description.value;
+                  createGroupLocal(groupName, description);
+                }}
+              >
+                <label>
+                  <input
+                    type="groupName"
+                    name="groupName"
+                    placeholder="Group Name"
+                  />
+                </label>
+                <br />
+                <label>
+                  <input
+                    type="description"
+                    name="description"
+                    placeholder="Description"
+                  />
+                </label>
+                <br />
+                <input type="submit" value="Submit" />
+              </form>
+            </td>
+            <td>
+              <input />
+              <br />
+              <button onClick={sendMessage}>Send Message</button>
+            </td>
+          </tr>
+        </table>
       </header>
     </div>
   );
