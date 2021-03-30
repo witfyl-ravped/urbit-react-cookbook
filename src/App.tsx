@@ -8,7 +8,6 @@ import {
   createGroup,
   createPost,
   addPost,
-  Group,
 } from "@urbit/api";
 
 const createApi = _.memoize(
@@ -29,6 +28,7 @@ const App = () => {
   const [sub, setSub] = useState<number | undefined>();
   const [log, setLog] = useState<string>("");
   const [groups, setGroups] = useState<string[]>([]);
+  const [keys, setKeys] = useState<string[]>([]);
 
   const subHandler = useCallback(
     (message) => {
@@ -56,14 +56,32 @@ const App = () => {
     },
     [log]
   );
+  interface Resource {
+    name: string;
+    ship: string;
+  }
 
-  const groupArray = useCallback(
-    (groups) => {
-      console.log(groups);
-      setGroups(Object.keys(groups.groupUpdate.initial));
+  let keyArray: string[] = [];
+  const keysArray = useCallback(
+    (keys) => {
+      console.log(keys);
+      keys["graph-update"]["keys"].forEach((key: Resource) =>
+        keyArray.push(key.name)
+      );
+      // console.log(keyArray);
+      setKeys(keyArray);
+      // console.log(Object.keys(keys["graph-update"]["keys"]));
     },
-    [groups]
+    [keys]
   );
+
+  // const groupArray = useCallback(
+  //   (groups) => {
+  //     console.log(groups);
+  //     setGroups(Object.keys(groups.groupUpdate.initial));
+  //   },
+  //   [groups]
+  // );
 
   useEffect(() => {
     const _urb = createApi();
@@ -91,16 +109,16 @@ const App = () => {
     if (!urb || sub) return;
     urb
       .subscribe({
-        app: "group-store",
-        path: "/groups",
-        event: groupArray,
+        app: "graph-store",
+        path: "/keys",
+        event: keysArray,
         err: console.log,
         quit: console.log,
       })
       .then((subscriptionId) => {
         setSub(subscriptionId);
       });
-  }, [urb, sub, groupArray]);
+  }, [urb, sub, keysArray]);
 
   function createGroupLocal(groupName: string, description: string) {
     if (!urb) return;
@@ -122,11 +140,11 @@ const App = () => {
     );
   }
 
-  function sendMessage(message: string, group: string) {
+  function sendMessage(message: string, key: string) {
     if (!urb || !urb.ship) return;
-    console.log(group);
+    console.log(key);
     const post = createPost(urb.ship, [{ text: message }]);
-    urb.thread(addPost("~zod", group, post));
+    urb.thread(addPost("~zod", key, post));
   }
 
   return (
@@ -181,17 +199,17 @@ const App = () => {
                   e.preventDefault();
                   const target = e.target as typeof e.target & {
                     message: { value: string };
-                    group: { value: string };
+                    key: { value: string };
                   };
                   const message = target.message.value;
-                  const group = target.group.value;
-                  sendMessage(message, group);
+                  const key = target.key.value;
+                  sendMessage(message, key);
                 }}
               >
-                <select id="group" name="group">
-                  <option>Select a Group</option>
-                  {groups.map((group) => (
-                    <option value={group}>{group}</option>
+                <select id="key" name="key">
+                  <option>Select a Key</option>
+                  {keys.map((key) => (
+                    <option value={key}>{key}</option>
                   ))}
                 </select>
                 <br />
