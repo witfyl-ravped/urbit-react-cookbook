@@ -8,7 +8,7 @@ import {
   createGroup,
   createPost,
   addPost,
-  TextContent,
+  Group,
 } from "@urbit/api";
 
 const createApi = _.memoize(
@@ -28,6 +28,7 @@ const App = () => {
   const [urb, setUrb] = useState<UrbitInterface | undefined>();
   const [sub, setSub] = useState<number | undefined>();
   const [log, setLog] = useState<string>("");
+  const [groups, setGroups] = useState<string[]>([]);
 
   const subHandler = useCallback(
     (message) => {
@@ -35,6 +36,7 @@ const App = () => {
       if (!("add-nodes" in message["graph-update"])) return;
       const newNodes: Record<string, GraphNode> =
         message["graph-update"]["add-nodes"]["nodes"];
+      console.log(newNodes);
       let newMessage = "";
       Object.keys(newNodes).forEach((index) => {
         newNodes[index].post.contents.forEach((content: Content) => {
@@ -51,9 +53,26 @@ const App = () => {
         });
       });
       setLog(`${log}\n${newMessage}`);
-      console.log("log");
     },
     [log]
+  );
+
+  const groupArray = useCallback(
+    (groups) => {
+      console.log(groups);
+
+      setGroups(Object.keys(groups.groupUpdate.initial));
+
+      // const fetchedGroups: Record<string, Group> =
+      //   groups["groupUpdate"]["initial"];
+      // console.log(fetchedGroups);
+
+      // const fetchedGroupsArray = [];
+      // Object.keys(fetchedGroups).forEach((index) => {
+      //   console.log(fetchedGroups[index]);
+      // });
+    },
+    [groups]
   );
 
   useEffect(() => {
@@ -78,6 +97,21 @@ const App = () => {
     console.log(urb);
   }, [urb, sub, subHandler]);
 
+  useEffect(() => {
+    if (!urb || sub) return;
+    urb
+      .subscribe({
+        app: "group-store",
+        path: "/groups",
+        event: groupArray,
+        err: console.log,
+        quit: console.log,
+      })
+      .then((subscriptionId) => {
+        setSub(subscriptionId);
+      });
+  }, [urb, sub, groupArray]);
+
   function createGroupLocal(groupName: string, description: string) {
     if (!urb) return;
     urb.thread(
@@ -98,10 +132,11 @@ const App = () => {
     );
   }
 
-  function sendMessage(message: string) {
+  function sendMessage(message: string, group: string) {
     if (!urb || !urb.ship) return;
+    console.log(group);
     const post = createPost(urb.ship, [{ text: message }]);
-    urb.thread(addPost("~zod", "testing-channel-1161", post));
+    urb.thread(addPost("~zod", group, post));
   }
 
   return (
@@ -160,14 +195,21 @@ const App = () => {
                   e.preventDefault();
                   const target = e.target as typeof e.target & {
                     message: { value: string };
+                    group: { value: string };
                   };
                   const message = target.message.value;
-                  sendMessage(message);
+                  const group = target.group.value;
+                  sendMessage(message, group);
                 }}
               >
-                <label>
-                  <input type="message" name="message" placeholder="Mesage" />
-                </label>
+                <select id="group" name="group">
+                  <option>Select a Group</option>
+                  {groups.map((group) => (
+                    <option value={group}>{group}</option>
+                  ))}
+                </select>
+                <br />
+                <input type="message" name="message" placeholder="Mesage" />
                 <br />
                 <input type="submit" value="Send Message" />
               </form>
