@@ -9,7 +9,7 @@
     "@types/jest": "^26.0.15",
     "@types/node": "^12.0.0",
     "@types/react-dom": "^17.0.0",
-    "@urbit/api": "^1.0.1",
+    "@urbit/api": "^1.0.2",
     "@urbit/http-api": "^1.1.3",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",

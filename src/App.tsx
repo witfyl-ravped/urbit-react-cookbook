@@ -2,7 +2,14 @@ import React, { useCallback, useEffect, useState } from "react";
 import _ from "lodash";
 import Urbit, { UrbitInterface } from "@urbit/http-api";
 import "./App.css";
-import { Content, GraphNode, createGroup } from "@urbit/api";
+import {
+  Content,
+  GraphNode,
+  createGroup,
+  createPost,
+  addPost,
+  TextContent,
+} from "@urbit/api";
 
 const createApi = _.memoize(
   (): UrbitInterface => {
@@ -73,41 +80,28 @@ const App = () => {
     console.log(urb);
   }, [urb, sub, subHandler]);
 
-  // const createGroup = () => {
-  //   if (!urb) return;
-  //   urb.thread({
-  //     inputMark: "group-view-action",
-  //     outputMark: "json",
-  //     threadName: "group-create",
-  //     body: {
-  //       create: {
-  //         name: "test-channel-2",
-  //         policy: {
-  //           open: {
-  //             banRanks: [],
-  //             banned: [],
-  //           },
-  //         },
-  //         title: "Test Channel 2",
-  //         description: "Testing channel 2",
-  //       },
-  //     },
-  //   });
-  // };
-
-  const createGroupLocal = () => {
-    createGroup(
-      "test-channel-2",
-      {
-        open: {
-          banRanks: [],
-          banned: [],
+  function createGroupLocal() {
+    if (!urb) return;
+    urb.thread(
+      createGroup(
+        "test-channel-2",
+        {
+          open: {
+            banRanks: [],
+            banned: [],
+          },
         },
-      },
-      "Test Channel 2",
-      "Testing Channel 2"
+        "Test Channel 2",
+        "Testing Channel 2"
+      )
     );
-  };
+  }
+
+  function sendMessage() {
+    if (!urb || !urb.ship) return;
+    const post = createPost(urb.ship, [{ text: "example text" }]);
+    urb.thread(addPost("~zod", "testing-channel-1161", post));
+  }
 
   return (
     <div className="App">
@@ -116,6 +110,7 @@ const App = () => {
         <pre>String from Hoon:{example}</pre>
         <pre>
           <button onClick={createGroupLocal}>Create Group</button>
+          <button onClick={sendMessage}>Send Message</button>
         </pre>
       </header>
     </div>
