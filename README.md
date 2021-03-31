@@ -6,11 +6,11 @@ This project was bootstrapped with [Create React App](https://github.com/faceboo
 
 First run `yarn install` to install project dependencies.
 
-Then boot a fake ~zod ship connected to localhost port 8080 (alternatively you can select a different port by editing `src/App.tsx`) For instructions on booting fake ships see [this guide](https://github.com/timlucmiptev/gall-guide/blob/62f4647b614dc201796204a0214629375a1a56bb/workflow.md).
+Then boot a fake `~zod` ship connected to localhost port 8080 (alternatively you can select a different port by editing `src/App.tsx`) For instructions on booting fake ships see [this guide](https://github.com/timlucmiptev/gall-guide/blob/62f4647b614dc201796204a0214629375a1a56bb/workflow.md).
 
 Then run `yarn start` to boot the local React server which will run at `http://localhost:3000` by default.
 
-In a separate browser tab connect to your fake ~zod's Landscape page which is `http://localhost:8080` or a custom port of you changed it
+In a separate browser tab connect to your fake `~zod`'s Landscape page which is `http://localhost:8080` or a custom port of you changed it
 
 Once the React server and Urbit ship are up and running enter `+cors-registry` in your ship's dojo. You will likely see two URLs in the `requests` entry:
 
@@ -20,7 +20,9 @@ and
 
 You'll need to add both to the approved list by running:
 
-`|cors-approve ~~http~3a.~2f.~2f.localhost~3a.3000` and `|cors-approve ~~http~3a.~2f.~2f.localhost~3a.8080` in dojo
+`|cors-approve ~~http~3a.~2f.~2f.localhost~3a.3000`
+and
+`|cors-approve ~~http~3a.~2f.~2f.localhost~3a.8080` in dojo
 
 Verfiy these commands worked by running `+cors-registry` again.
 
