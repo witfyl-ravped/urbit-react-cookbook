@@ -154,6 +154,8 @@ const App = () => {
         description
       )
     );
+    window.confirm(`Created group ${groupName}`);
+    window.location.reload();
   }
 
   function createChannelLocal(
@@ -165,6 +167,8 @@ const App = () => {
     urb.thread(
       createManagedGraph("zod", chat, chat, description, group, "chat")
     );
+    window.confirm(`Created chat ${chat}`);
+    window.location.reload();
   }
 
   function sendMessage(message: string, key: string) {
@@ -172,6 +176,7 @@ const App = () => {
     console.log(key);
     const post = createPost(urb.ship, [{ text: message }]);
     urb.thread(addPost("~zod", key, post));
+    alert("Message sent");
   }
 
   return (
