@@ -12,6 +12,9 @@ import {
   dateToDa,
 } from "@urbit/api";
 
+// This is how we establish a connection with out ship. We pass the port that our fake ship is running on along with
+// its code into the Urbit object we imported above. Notice that we then manually assign the name of our ship by declaring 'urb.ship'
+// This gets called when initializing our state in the App function below
 const createApi = _.memoize(
   (): UrbitInterface => {
     const urb = new Urbit(
@@ -25,16 +28,25 @@ const createApi = _.memoize(
   }
 );
 
+// Here we create out app's functional component. We begin by using useState to create state objects for all of the data we're calling out of our ship
+// Also notice that we create a state object for urb that gets set when we call the createApi function
 const App = () => {
-  const [urb, setUrb] = useState<UrbitInterface | undefined>();
-  const [sub, setSub] = useState<number | undefined>();
-  const [log, setLog] = useState<string>("");
-  const [groups, setGroups] = useState<string[]>([]);
-  const [keys, setKeys] = useState<string[]>([]);
+  const [urb, setUrb] = useState<UrbitInterface | undefined>(); // stores our Urbit connection. Notice we declare the type as UrbitInterface
+  const [sub, setSub] = useState<number | undefined>(); // Currently managing all subscriptions with one state object. This will most likely change with future api fixes
+  const [log, setLog] = useState<string>(""); // State object for the log we keep of incoming messages for display
+  const [groups, setGroups] = useState<string[]>([]); // State object to keep track of the list of groups our ship belongs to
+  const [keys, setKeys] = useState<string[]>([]); // Same as above but for channels(chats). I'm keeping the variable name 'keys' as that is the term used in graph-store
 
-  const subHandler = useCallback(
+  // We use useEffect to run our createApi function above to establish and store our connection to our ship
+  useEffect(() => {
+    const _urb = createApi();
+    setUrb(_urb);
+    return () => {};
+  }, [setUrb]);
+
+  // Callback function that we will pass into our graph-store subscription that logs incoming messages to chats courtesy of ~radur-sivmus!
+  const logHandler = useCallback(
     (message) => {
-      console.log(message);
       if (!("add-nodes" in message["graph-update"])) return;
       const newNodes: Record<string, GraphNode> =
         message["graph-update"]["add-nodes"]["nodes"];
@@ -54,20 +66,22 @@ const App = () => {
           }
         });
       });
-      setLog(`${log}\n${newMessage}`);
+      setLog(`${log}\n${newMessage}`); // This is the React Hooks pattern. The above code formats the message and then we use setLog to store it in state
     },
-    [log]
+    [log] // Again part of the React Hooks pattern. This keeps an eye on whether the log has changed to know when to run the above on new data
   );
 
+  // An example of creating a TypeScript resource for Hoon data structure. In this case a Resource which is a name and a ship that we will use to parse
+  // chat names below
   interface Resource {
     name: string;
     ship: string;
   }
 
+  // Callback function that we pass into the graph-store subscription to grab all of our ships keys i.e. chat names
   const keysArray = useCallback(
     (keys) => {
       let keyArray: string[] = [];
-      console.log(keys);
       keys["graph-update"]["keys"].forEach((key: Resource) =>
         keyArray.push(key.name)
       );
@@ -76,51 +90,34 @@ const App = () => {
     [keys]
   );
 
+  // Callback function that we pass into the group-store (not graph-store!) subscription to grab all of the groups that our ship is a member of
   const groupArray = useCallback(
     (groups) => {
-      console.log(groups);
       setGroups(Object.keys(groups.groupUpdate.initial));
     },
     [groups]
   );
 
-  useEffect(() => {
-    const _urb = createApi();
-    setUrb(_urb);
-    return () => {};
-  }, [setUrb]);
-
+  // Now we use useEffect to establish our subscriptions to our ship. Notice that subscriptions are called directly on our Urbit object using
+  // urb.subscribe. This first one parses incoming messages to add to our log
   useEffect(() => {
     if (!urb || sub) return;
     urb
       .subscribe({
+        // Great boilerplate example for making subscriptions to graph-store
         app: "graph-store",
         path: "/updates",
-        event: subHandler,
+        event: logHandler, // Refer to our logHandler function above to see how messages are parsed for display
         err: console.log,
         quit: console.log,
       })
       .then((subscriptionId) => {
-        setSub(subscriptionId);
+        setSub(subscriptionId); // Same as useCallback Hook we see the pattern of setting the state object from the returned data
       });
     console.log(urb);
-  }, [urb, sub, subHandler]);
+  }, [urb, sub, logHandler]); // And again here is what we're monitoring for changes
 
-  useEffect(() => {
-    if (!urb || sub) return;
-    urb
-      .subscribe({
-        app: "graph-store",
-        path: "/keys",
-        event: keysArray,
-        err: console.log,
-        quit: console.log,
-      })
-      .then((subscriptionId) => {
-        setSub(subscriptionId);
-      });
-  }, [urb, sub, keysArray]);
-
+  // Almost the same as above but this time we're subscribing to group-store in order to get the names of the groups that our ship belongs to
   useEffect(() => {
     if (!urb || sub) return;
     urb
@@ -136,6 +133,24 @@ const App = () => {
       });
   }, [urb, sub, groupArray]);
 
+  // Another graph-store subscription pattern this time to pull the list of channels(chats) that our ship belongs to. Again I'm leaving the varialbe
+  // names that refer to chats as 'keys' to match the terminology of graph-store
+  useEffect(() => {
+    if (!urb || sub) return;
+    urb
+      .subscribe({
+        app: "graph-store",
+        path: "/keys",
+        event: keysArray,
+        err: console.log,
+        quit: console.log,
+      })
+      .then((subscriptionId) => {
+        setSub(subscriptionId);
+      });
+  }, [urb, sub, keysArray]);
+
+  // This is a simple kebab formatting function that will most likely be built into @urbit/api in future versions
   function formatGroupName(name: string) {
     return name
       .replace(/([a-z])([A-Z])/g, "$1-$2")
@@ -143,10 +158,15 @@ const App = () => {
       .toLowerCase();
   }
 
+  // Now we start defining graph-store actions that are called directly on our Urbit object using urb.thread. Threads are the main way that we send
+  // commands to graph-store. This example uses them to create groups/chats and send messages. This first function is used to create a group
   function createGroupLocal(groupName: string, description: string) {
     if (!urb) return;
     urb.thread(
+      // Notice that unlike subscriptions above, we pass a formatting function into our thread function. In this case it is createGroup
+      // I'm using default values for the 'open' object but you can create a UI to allow users to input custom values.
       createGroup(
+        // The name variable stays under the hood and we use our helper format function to create it from the groupName
         formatGroupName(groupName),
         {
           open: {
@@ -162,6 +182,7 @@ const App = () => {
     window.location.reload();
   }
 
+  // Another helper function from landscape that will eventually be built into @urbit/api used here to format chat names
   function stringToSymbol(str: string) {
     const ascii = str;
     let result = "";
@@ -183,26 +204,34 @@ const App = () => {
     return result;
   }
 
+  // Similar to createGroupLocal above we use urb.thread to create a channel via graph-store.
   function createChannelLocal(
     group: string,
     chat: string,
     description: string
   ) {
-    if (!urb) return;
+    if (!urb || !urb.ship) return;
+    // Similar to stringToSymbol this is also a bit of formatting that will likely become a part of @urbit/api in the future. It is used to append
+    // the random numbers the end of a channel names
     const resId: string =
       stringToSymbol(chat) + `-${Math.floor(Math.random() * 10000)}`;
     urb.thread(
-      createManagedGraph("zod", resId, chat, description, group, "chat")
+      // Notice again we pass a formatting function into urb.thread this time it is createManagedGraph
+      createManagedGraph(urb.ship, resId, chat, description, group, "chat")
     );
     window.confirm(`Created chat ${chat}`);
     window.location.reload();
   }
 
+  // Our function to send messages to a channel(chat) defined by the user in our UI
   function sendMessage(message: string, key: string) {
     if (!urb || !urb.ship) return;
-    console.log(key);
+
+    // Notice that this requires an extra formatting function. First we use createPost to format the message from the browser
     const post = createPost(urb.ship, [{ text: message }]);
-    urb.thread(addPost("~zod", key, post));
+    // Then we wrap our newly formatted post in the addPost function and pass that into urb.thread. We've now formatted our user message properly
+    // for graph-store to parse
+    urb.thread(addPost(`~${urb.ship}`, key, post));
     alert("Message sent");
   }
 
@@ -233,6 +262,7 @@ const App = () => {
           </tr>
           <tr>
             <td>
+              {/* Here's an example of how to collect data from a user to pass into our createGroupLocal function*/}
               <form
                 onSubmit={(e: React.SyntheticEvent) => {
                   e.preventDefault();
@@ -240,6 +270,9 @@ const App = () => {
                     groupName: { value: string };
                     description: { value: string };
                   };
+                  {
+                    /* We're just creating variables from the input fields defined below, createGroupLocal handles the formatting*/
+                  }
                   const groupName = target.groupName.value;
                   const description = target.description.value;
                   createGroupLocal(groupName, description);
@@ -261,6 +294,7 @@ const App = () => {
               </form>
             </td>
             <td>
+              {/* Same as group input for channel(chat) input. Only difference is we present the user's groups as dropdown options*/}
               <form
                 onSubmit={(e: React.SyntheticEvent) => {
                   e.preventDefault();
@@ -275,6 +309,7 @@ const App = () => {
                   createChannelLocal(group, chat, description);
                 }}
               >
+                {/* Here we leverage our groups state variable to render a dropdown list of available groups to create channels(chats) in */}
                 <select id="group" name="group">
                   <option>Select a Group</option>
                   {groups.map((group) => (
@@ -294,6 +329,10 @@ const App = () => {
               </form>
             </td>
             <td>
+              {/* Here we do the same as the channel input but for messages. This looks the same
+              as chat creation since all of the formatting is done in our functions above.
+              We just need to present the user with a list of channels(chats) to choose and then an input field
+              for their message */}
               <form
                 onSubmit={(e: React.SyntheticEvent) => {
                   e.preventDefault();
