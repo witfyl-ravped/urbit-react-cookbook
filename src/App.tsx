@@ -8,6 +8,7 @@ import {
   createGroup,
   createPost,
   addPost,
+  addGraph,
 } from "@urbit/api";
 
 const createApi = _.memoize(
@@ -56,6 +57,7 @@ const App = () => {
     },
     [log]
   );
+
   interface Resource {
     name: string;
     ship: string;
@@ -68,20 +70,18 @@ const App = () => {
       keys["graph-update"]["keys"].forEach((key: Resource) =>
         keyArray.push(key.name)
       );
-      // console.log(keyArray);
       setKeys(keyArray);
-      // console.log(Object.keys(keys["graph-update"]["keys"]));
     },
     [keys]
   );
 
-  // const groupArray = useCallback(
-  //   (groups) => {
-  //     console.log(groups);
-  //     setGroups(Object.keys(groups.groupUpdate.initial));
-  //   },
-  //   [groups]
-  // );
+  const groupArray = useCallback(
+    (groups) => {
+      console.log(groups);
+      setGroups(Object.keys(groups.groupUpdate.initial));
+    },
+    [groups]
+  );
 
   useEffect(() => {
     const _urb = createApi();
@@ -120,14 +120,30 @@ const App = () => {
       });
   }, [urb, sub, keysArray]);
 
+  useEffect(() => {
+    if (!urb || sub) return;
+    urb
+      .subscribe({
+        app: "group-store",
+        path: "/groups",
+        event: groupArray,
+        err: console.log,
+        quit: console.log,
+      })
+      .then((subscriptionId) => {
+        setSub(subscriptionId);
+      });
+  }, [urb, sub, groupArray]);
+
   function createGroupLocal(groupName: string, description: string) {
     if (!urb) return;
+    const formattedName = groupName
+      .replace(/([a-z])([A-Z])/g, "$1-$2")
+      .replace(/\s+/g, "-")
+      .toLowerCase();
     urb.thread(
       createGroup(
-        groupName
-          .replace(/([a-z])([A-Z])/g, "$1-$2")
-          .replace(/\s+/g, "-")
-          .toLowerCase(),
+        formattedName,
         {
           open: {
             banRanks: [],
@@ -138,6 +154,23 @@ const App = () => {
         description
       )
     );
+  }
+
+  function createChannelLocal(
+    group: string,
+    chat: string,
+    description: string
+  ) {
+    console.log(group.slice(11), chat, description);
+    // if (!urb) return;
+    // urb.poke(
+    //   addGraph(
+    //     "~zod",
+    //     chat,
+    //     { ship: "~zod", name: "formattedName" },
+    //     "graph-validator-chat"
+    //   )
+    // );
   }
 
   function sendMessage(message: string, key: string) {
@@ -156,6 +189,11 @@ const App = () => {
             <td>
               <div style={{ justifyContent: "center" }}>
                 <pre>Create Group</pre>
+              </div>
+            </td>
+            <td>
+              <div style={{ justifyContent: "center" }}>
+                <pre>Create Channel</pre>
               </div>
             </td>
             <td>
@@ -198,18 +236,51 @@ const App = () => {
                 onSubmit={(e: React.SyntheticEvent) => {
                   e.preventDefault();
                   const target = e.target as typeof e.target & {
-                    message: { value: string };
-                    key: { value: string };
+                    group: { value: string };
+                    chat: { value: string };
+                    description: { value: string };
                   };
-                  const message = target.message.value;
-                  const key = target.key.value;
-                  sendMessage(message, key);
+                  const group = target.group.value;
+                  const chat = target.chat.value;
+                  const description = target.description.value;
+                  createChannelLocal(group, chat, description);
                 }}
               >
-                <select id="key" name="key">
-                  <option>Select a Key</option>
-                  {keys.map((key) => (
-                    <option value={key}>{key}</option>
+                <select id="group" name="group">
+                  <option>Select a Group</option>
+                  {groups.map((group) => (
+                    <option value={group}>{group}</option>
+                  ))}
+                </select>
+                <br />
+                <input type="chat" name="chat" placeholder="Chat Name" />
+                <br />
+                <input
+                  type="description"
+                  name="description"
+                  placeholder="Description"
+                />
+                <br />
+                <input type="submit" value="Create Group" />
+              </form>
+            </td>
+            <td>
+              <form
+                onSubmit={(e: React.SyntheticEvent) => {
+                  e.preventDefault();
+                  const target = e.target as typeof e.target & {
+                    message: { value: string };
+                    chat: { value: string };
+                  };
+                  const message = target.message.value;
+                  const chat = target.chat.value;
+                  sendMessage(message, chat);
+                }}
+              >
+                <select id="chat" name="chat">
+                  <option>Select a Chat</option>
+                  {keys.map((chat) => (
+                    <option value={chat}>{chat}</option>
                   ))}
                 </select>
                 <br />
