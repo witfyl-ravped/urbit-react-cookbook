@@ -161,8 +161,6 @@ const App = () => {
     chat: string,
     description: string
   ) {
-    // const formattedGroup = group.slice(11);
-    // console.log(group.slice(11), chat, description);
     if (!urb) return;
     urb.thread(
       createManagedGraph("zod", chat, chat, description, group, "chat")
