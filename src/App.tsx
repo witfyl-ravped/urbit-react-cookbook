@@ -8,7 +8,7 @@ import {
   createGroup,
   createPost,
   addPost,
-  addGraph,
+  createManagedGraph,
 } from "@urbit/api";
 
 const createApi = _.memoize(
@@ -161,16 +161,12 @@ const App = () => {
     chat: string,
     description: string
   ) {
-    console.log(group.slice(11), chat, description);
-    // if (!urb) return;
-    // urb.poke(
-    //   addGraph(
-    //     "~zod",
-    //     chat,
-    //     { ship: "~zod", name: "formattedName" },
-    //     "graph-validator-chat"
-    //   )
-    // );
+    // const formattedGroup = group.slice(11);
+    // console.log(group.slice(11), chat, description);
+    if (!urb) return;
+    urb.thread(
+      createManagedGraph("zod", chat, chat, description, group, "chat")
+    );
   }
 
   function sendMessage(message: string, key: string) {
@@ -183,7 +179,10 @@ const App = () => {
   return (
     <div className="App">
       <header className="App-header">
-        <pre>Result: {log}</pre>
+        <pre>
+          Latest Message:
+          <br /> {log}
+        </pre>
         <table width="100%">
           <tr>
             <td>
