@@ -9,6 +9,7 @@ import {
   createPost,
   addPost,
   createManagedGraph,
+  dateToDa,
 } from "@urbit/api";
 
 const createApi = _.memoize(
@@ -63,9 +64,9 @@ const App = () => {
     ship: string;
   }
 
-  let keyArray: string[] = [];
   const keysArray = useCallback(
     (keys) => {
+      let keyArray: string[] = [];
       console.log(keys);
       keys["graph-update"]["keys"].forEach((key: Resource) =>
         keyArray.push(key.name)
@@ -135,15 +136,18 @@ const App = () => {
       });
   }, [urb, sub, groupArray]);
 
-  function createGroupLocal(groupName: string, description: string) {
-    if (!urb) return;
-    const formattedName = groupName
+  function formatGroupName(name: string) {
+    return name
       .replace(/([a-z])([A-Z])/g, "$1-$2")
       .replace(/\s+/g, "-")
       .toLowerCase();
+  }
+
+  function createGroupLocal(groupName: string, description: string) {
+    if (!urb) return;
     urb.thread(
       createGroup(
-        formattedName,
+        formatGroupName(groupName),
         {
           open: {
             banRanks: [],
@@ -158,14 +162,37 @@ const App = () => {
     window.location.reload();
   }
 
+  function stringToSymbol(str: string) {
+    const ascii = str;
+    let result = "";
+    for (let i = 0; i < ascii.length; i++) {
+      const n = ascii.charCodeAt(i);
+      if ((n >= 97 && n <= 122) || (n >= 48 && n <= 57)) {
+        result += ascii[i];
+      } else if (n >= 65 && n <= 90) {
+        result += String.fromCharCode(n + 32);
+      } else {
+        result += "-";
+      }
+    }
+    result = result.replace(/^[\-\d]+|\-+/g, "-");
+    result = result.replace(/^\-+|\-+$/g, "");
+    if (result === "") {
+      return dateToDa(new Date());
+    }
+    return result;
+  }
+
   function createChannelLocal(
     group: string,
     chat: string,
     description: string
   ) {
     if (!urb) return;
+    const resId: string =
+      stringToSymbol(chat) + `-${Math.floor(Math.random() * 10000)}`;
     urb.thread(
-      createManagedGraph("zod", chat, chat, description, group, "chat")
+      createManagedGraph("zod", resId, chat, description, group, "chat")
     );
     window.confirm(`Created chat ${chat}`);
     window.location.reload();
