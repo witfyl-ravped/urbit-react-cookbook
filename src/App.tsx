@@ -325,7 +325,7 @@ const App = () => {
                   placeholder="Description"
                 />
                 <br />
-                <input type="submit" value="Create Group" />
+                <input type="submit" value="Create Channel" />
               </form>
             </td>
             <td>
@@ -352,7 +352,7 @@ const App = () => {
                   ))}
                 </select>
                 <br />
-                <input type="message" name="message" placeholder="Mesage" />
+                <input type="message" name="message" placeholder="Message" />
                 <br />
                 <input type="submit" value="Send Message" />
               </form>

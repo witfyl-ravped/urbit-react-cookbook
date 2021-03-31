@@ -1,46 +1,23 @@
-# Getting Started with Create React App
+# Urbit React Cookbook
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
-## Available Scripts
+## Getting Started
 
-In the project directory, you can run:
+First run `yarn install` to install project dependencies.
 
-### `yarn start`
+Then boot a fake ~zod ship connected to localhost port 8080 (alternatively you can select a different port by editing `src/App.tsx`) For instructions on booting fake ships see [this guide](https://github.com/timlucmiptev/gall-guide/blob/62f4647b614dc201796204a0214629375a1a56bb/workflow.md).
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+Then run `yarn start` to boot the local React server which will run at `http://localhost:3000` by default.
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+In a separate browser tab connect to your fake ~zod's Landscape page which is `http://localhost:8080` or a custom port of you changed it
 
-### `yarn test`
+## Using the interface
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
-
-### `yarn build`
-
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `yarn eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
-
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
-
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
+<li>Once the React server and Urbit ship are up and running start by adding a group using the form on the left. Enter a group name, group description then press "Create Group." Your browser will confirm the successful creation with an alert window.
+<li>After clicking OK in the alert window navigate to your Landscape page to confirm that the group was created and tile added.
+<li>Back in the React Aoo, fill in the middle "Create Channel" inputs. Select your newly created group from the drop-down and enter a Chat Name and Description and press "Create Channel". This should also be confirmed be a window alert upon success.
+<li>After clicking OK in the alert window navigate to your Landscape page to confirm that the channel was created within your previously created group.
+<li>Again back in the React App, select a chat from the drop-down menu under "Send Message" and enter text. Upon clicking the "Send Message" button you should once again receive a confirmation alert.
+<li>Your message should now appear at the top of the React app. You can navigate back to your Landscape window to see the message you just sent from React displayed in the newly created channel.
+<li>Notice that you can send a message to the channel from Landscape and that it will also appear at the top of the React app.
