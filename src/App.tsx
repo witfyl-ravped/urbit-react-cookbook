@@ -10,6 +10,8 @@ import {
   addPost,
   createManagedGraph,
   dateToDa,
+  removeGroup,
+  resourceFromPath,
 } from "@urbit/api";
 
 // This is how we establish a connection with out ship. We pass the port that our fake ship is running on along with
@@ -163,7 +165,7 @@ const App = () => {
   function createGroupLocal(groupName: string, description: string) {
     if (!urb) return;
     urb.thread(
-      // Notice that unlike subscriptions above, we pass a formatting function into our thread function. In this case it is createGroup
+      // Notice that unlike subscriptions above, we pass a formatting function into our thread function. In this case it is createGroupLocal
       // I'm using default values for the 'open' object but you can create a UI to allow users to input custom values.
       createGroup(
         // The name variable stays under the hood and we use our helper format function to create it from the groupName
@@ -233,6 +235,14 @@ const App = () => {
     // for graph-store to parse
     urb.thread(addPost(`~${urb.ship}`, key, post));
     alert("Message sent");
+  }
+
+  function removeGroupLocal(group: string) {
+    if (!urb) return;
+    console.log(group);
+    urb.poke(removeGroup(resourceFromPath(group)));
+    window.confirm(`Removed group ${group}`);
+    window.location.reload();
   }
 
   return (
@@ -355,6 +365,46 @@ const App = () => {
                 <input type="message" name="message" placeholder="Message" />
                 <br />
                 <input type="submit" value="Send Message" />
+              </form>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <div style={{ justifyContent: "center" }}>
+                <pre>Remove Group</pre>
+              </div>
+            </td>
+            <td>
+              <div style={{ justifyContent: "center" }}>
+                <pre>Remove Channel</pre>
+              </div>
+            </td>
+            <td>
+              <div style={{ justifyContent: "center" }}>
+                <pre>Something Else</pre>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <form
+                onSubmit={(e: React.SyntheticEvent) => {
+                  e.preventDefault();
+                  const target = e.target as typeof e.target & {
+                    group: { value: string };
+                  };
+                  const group = target.group.value;
+                  removeGroupLocal(group);
+                }}
+              >
+                <select id="group" name="group">
+                  <option>Select a Group</option>
+                  {groups.map((group) => (
+                    <option value={group}>{group}</option>
+                  ))}
+                </select>
+                <br />
+                <input type="submit" value="Remove Group" />
               </form>
             </td>
           </tr>
