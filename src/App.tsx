@@ -12,6 +12,10 @@ import {
   dateToDa,
   removeGroup,
   resourceFromPath,
+  deleteGraph,
+  Resource,
+  resourceAsPath,
+  Path,
 } from "@urbit/api";
 
 // This is how we establish a connection with out ship. We pass the port that our fake ship is running on along with
@@ -37,7 +41,7 @@ const App = () => {
   const [sub, setSub] = useState<number | undefined>(); // Currently managing all subscriptions with one state object. This will most likely change with future api fixes
   const [log, setLog] = useState<string>(""); // State object for the log we keep of incoming messages for display
   const [groups, setGroups] = useState<string[]>([]); // State object to keep track of the list of groups our ship belongs to
-  const [keys, setKeys] = useState<string[]>([]); // Same as above but for channels(chats). I'm keeping the variable name 'keys' as that is the term used in graph-store
+  const [keys, setKeys] = useState<Path[]>([]); // Same as above but for channels(chats). I'm keeping the variable name 'keys' as that is the term used in graph-store
 
   // We use useEffect to run our createApi function above to establish and store our connection to our ship
   useEffect(() => {
@@ -75,18 +79,21 @@ const App = () => {
 
   // An example of creating a TypeScript resource for Hoon data structure. In this case a Resource which is a name and a ship that we will use to parse
   // chat names below
-  interface Resource {
-    name: string;
-    ship: string;
-  }
+  // interface Resource {
+  //   name: string;
+  //   ship: string;
+  // }
 
   // Callback function that we pass into the graph-store subscription to grab all of our ships keys i.e. chat names
   const keysArray = useCallback(
     (keys) => {
-      let keyArray: string[] = [];
-      keys["graph-update"]["keys"].forEach((key: Resource) =>
-        keyArray.push(key.name)
-      );
+      console.log(keys);
+      let keyArray: Path[] = [];
+      keys["graph-update"]["keys"].forEach((key: Resource) => {
+        // const path = resourceAsPath(key);
+        // console.log(path);
+        keyArray.push(resourceAsPath(key));
+      });
       setKeys(keyArray);
     },
     [keys]
@@ -226,14 +233,16 @@ const App = () => {
   }
 
   // Our function to send messages to a channel(chat) defined by the user in our UI
-  function sendMessage(message: string, key: string) {
+  function sendMessage(message: string, key: Path) {
     if (!urb || !urb.ship) return;
 
     // Notice that this requires an extra formatting function. First we use createPost to format the message from the browser
     const post = createPost(urb.ship, [{ text: message }]);
-    // Then we wrap our newly formatted post in the addPost function and pass that into urb.thread. We've now formatted our user message properly
-    // for graph-store to parse
-    urb.thread(addPost(`~${urb.ship}`, key, post));
+    // Then we wrap our newly formatted post in the addPost function and pass that into urb.thread. Notice we'll have to translate our
+    // key name (Path) back to a Resource in order for us to grab the name for the addPost function
+    // We've now formatted our user message properly for graph-store to parse
+    const keyResource = resourceFromPath(key);
+    urb.thread(addPost(`~${urb.ship}`, keyResource.name, post));
     alert("Message sent");
   }
 
@@ -242,6 +251,16 @@ const App = () => {
     console.log(group);
     urb.poke(removeGroup(resourceFromPath(group)));
     window.confirm(`Removed group ${group}`);
+    window.location.reload();
+  }
+
+  function removeChannelLocal(channel: Path) {
+    if (!urb) return;
+    const channelResource = resourceFromPath(channel);
+    urb.thread(
+      deleteGraph(channelResource.ship.slice(1), channelResource.name)
+    );
+    window.confirm(`Removed channel ${channel}`);
     window.location.reload();
   }
 
@@ -348,7 +367,7 @@ const App = () => {
                   e.preventDefault();
                   const target = e.target as typeof e.target & {
                     message: { value: string };
-                    chat: { value: string };
+                    chat: { value: Path };
                   };
                   const message = target.message.value;
                   const chat = target.chat.value;
@@ -356,7 +375,7 @@ const App = () => {
                 }}
               >
                 <select id="chat" name="chat">
-                  <option>Select a Chat</option>
+                  <option>Select a Channel</option>
                   {keys.map((chat) => (
                     <option value={chat}>{chat}</option>
                   ))}
@@ -405,6 +424,27 @@ const App = () => {
                 </select>
                 <br />
                 <input type="submit" value="Remove Group" />
+              </form>
+            </td>
+            <td>
+              <form
+                onSubmit={(e: React.SyntheticEvent) => {
+                  e.preventDefault();
+                  const target = e.target as typeof e.target & {
+                    chat: { value: Path };
+                  };
+                  const chat = target.chat.value;
+                  removeChannelLocal(chat);
+                }}
+              >
+                <select id="chat" name="chat">
+                  <option>Select a Channel</option>
+                  {keys.map((chat) => (
+                    <option value={chat}>{chat}</option>
+                  ))}
+                </select>
+                <br />
+                <input type="submit" value="Remove Channel" />
               </form>
             </td>
           </tr>
