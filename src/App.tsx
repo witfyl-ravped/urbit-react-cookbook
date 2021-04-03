@@ -11,11 +11,14 @@ import {
   createManagedGraph,
   dateToDa,
   removeGroup,
+  deleteGroup,
   resourceFromPath,
   deleteGraph,
   Resource,
   resourceAsPath,
   Path,
+  remove,
+  deSig,
 } from "@urbit/api";
 
 // This is how we establish a connection with out ship. We pass the port that our fake ship is running on along with
@@ -246,22 +249,36 @@ const App = () => {
     alert("Message sent");
   }
 
+  // Function to remove a group from our React UI
   function removeGroupLocal(group: string) {
     if (!urb) return;
-    console.log(group);
-    urb.poke(removeGroup(resourceFromPath(group)));
+    // This is a standard practice of using the resourceFromPath function to convert a Path string into our Resource interface
+    const groupResource = resourceFromPath(group);
+    // Here we're passing a thread the deleteGroup function from the groups library and destructuring the ship and name from
+    // the group resource we created above
+    urb.thread(deleteGroup(groupResource.ship, groupResource.name));
     window.confirm(`Removed group ${group}`);
     window.location.reload();
   }
 
+  // Function to remove a channel from our React UI
   function removeChannelLocal(channel: Path) {
     if (!urb) return;
     const channelResource = resourceFromPath(channel);
-    urb.thread(
-      deleteGraph(channelResource.ship.slice(1), channelResource.name)
-    );
+    // Similar to group we're converting the Path string to a Resource type
+    // Notice below that we use the deSig function. You'll notice that different functions have different formatting processes
+    // deSig will remove the ~ from the ship name because deleteGraph is instructed to add one. Without deSig we would
+    // end up with ~~zod
+    urb.thread(deleteGraph(deSig(channelResource.ship), channelResource.name));
     window.confirm(`Removed channel ${channel}`);
     window.location.reload();
+  }
+
+  function removeChannelMetadata(channel: Path, group: string) {
+    if (!urb) return;
+    // const channelResource = resourceFromPath(channel);
+    urb.poke(remove("chat", channel, group));
+    console.log(channel, group);
   }
 
   return (
@@ -400,7 +417,7 @@ const App = () => {
             </td>
             <td>
               <div style={{ justifyContent: "center" }}>
-                <pre>Something Else</pre>
+                <pre>Remove Channel Metadata</pre>
               </div>
             </td>
           </tr>
@@ -435,6 +452,27 @@ const App = () => {
                   };
                   const chat = target.chat.value;
                   removeChannelLocal(chat);
+                }}
+              >
+                <select id="chat" name="chat">
+                  <option>Select a Channel</option>
+                  {keys.map((chat) => (
+                    <option value={chat}>{chat}</option>
+                  ))}
+                </select>
+                <br />
+                <input type="submit" value="Remove Channel" />
+              </form>
+            </td>
+            <td>
+              <form
+                onSubmit={(e: React.SyntheticEvent) => {
+                  e.preventDefault();
+                  const target = e.target as typeof e.target & {
+                    chat: { value: Path };
+                  };
+                  const chat = target.chat.value;
+                  removeChannelMetadata(chat, "/ship/~zod/metadata");
                 }}
               >
                 <select id="chat" name="chat">
