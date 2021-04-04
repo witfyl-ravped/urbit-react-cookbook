@@ -20,6 +20,7 @@ import {
   remove,
   deSig,
   addMembers,
+  Group,
 } from "@urbit/api";
 
 // This is how we establish a connection with out ship. We pass the port that our fake ship is running on along with
@@ -44,7 +45,7 @@ const App = () => {
   const [urb, setUrb] = useState<UrbitInterface | undefined>(); // stores our Urbit connection. Notice we declare the type as UrbitInterface
   const [sub, setSub] = useState<number | undefined>(); // Currently managing all subscriptions with one state object. This will most likely change with future api fixes
   const [log, setLog] = useState<string>(""); // State object for the log we keep of incoming messages for display
-  const [groups, setGroups] = useState<string[]>([]); // State object to keep track of the list of groups our ship belongs to
+  const [groups, setGroups] = useState<GroupWName[]>([]); // State object to keep track of the list of groups our ship belongs to
   const [keys, setKeys] = useState<Path[]>([]); // Same as above but for channels(chats). I'm keeping the variable name 'keys' as that is the term used in graph-store
 
   // We use useEffect to run our createApi function above to establish and store our connection to our ship
@@ -104,9 +105,20 @@ const App = () => {
   );
 
   // Callback function that we pass into the group-store (not graph-store!) subscription to grab all of the groups that our ship is a member of
+  interface GroupWName {
+    name: string;
+    group: Group;
+  }
   const groupArray = useCallback(
     (groups) => {
-      setGroups(Object.keys(groups.groupUpdate.initial));
+      console.log(groups);
+      const groupsArray: GroupWName[] = [];
+      Object.keys(groups.groupUpdate.initial).forEach((key) => {
+        // console.log({ key: groups.groupUpdate.initial[key] });
+        groupsArray.push({ name: key, group: groups.groupUpdate.initial[key] });
+      });
+      console.log(groupsArray);
+      setGroups(groupsArray);
     },
     [groups]
   );
@@ -372,7 +384,7 @@ const App = () => {
                 <select id="group" name="group">
                   <option>Select a Group</option>
                   {groups.map((group) => (
-                    <option value={group}>{group}</option>
+                    <option value={group.name}>{group.name}</option>
                   ))}
                 </select>
                 <br />
@@ -425,7 +437,7 @@ const App = () => {
             </td>
             <td>
               <div style={{ justifyContent: "center" }}>
-                <pre>Send Invites</pre>
+                <pre>Remove Members</pre>
               </div>
             </td>
             <td>
@@ -452,13 +464,49 @@ const App = () => {
                 <select id="group" name="group">
                   <option>Select a Group</option>
                   {groups.map((group) => (
-                    <option value={group}>{group}</option>
+                    <option value={group.name}>{group.name}</option>
                   ))}
                 </select>
                 <br />
                 <input type="member" name="member" placeholder="Ship Name" />
                 <br />
                 <input type="submit" value="Add Member" />
+              </form>
+            </td>
+            <td>
+              <form
+                onSubmit={(e: React.SyntheticEvent) => {
+                  e.preventDefault();
+                  const target = e.target as typeof e.target & {
+                    group: { value: string };
+                    member: { value: string };
+                  };
+                  const group = target.group.value;
+                  const member = target.member.value;
+                  addMembersLocal(group, member);
+                }}
+              >
+                {/* Here we leverage our groups state variable to render a dropdown list of available groups to create channels(chats) in */}
+                <select id="member" name="member">
+                  <option>Select a Groupie</option>
+                  {groups[0]
+                    ? groups[0].group.members.map((member) => {
+                        console.log("proof", member);
+                        // group.group.members.map((member) => (
+                        <option value={member}>{member}</option>;
+                        // ));
+                      })
+                    : null}
+                </select>
+                <br />
+                {/* <select id="member" name="member">
+                  <option>Select a Group</option>
+                  {groups.map((group) => (
+                    <option value={group.name}>{group.name}</option>
+                  ))}
+                </select> */}
+                <br />
+                <input type="submit" value="Remove Member" />
               </form>
             </td>
           </tr>
@@ -494,7 +542,7 @@ const App = () => {
                 <select id="group" name="group">
                   <option>Select a Group</option>
                   {groups.map((group) => (
-                    <option value={group}>{group}</option>
+                    <option value={group.name}>{group.name}</option>
                   ))}
                 </select>
                 <br />
