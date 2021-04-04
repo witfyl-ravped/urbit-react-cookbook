@@ -12,19 +12,15 @@ Then run `yarn start` to boot the local React server which will run at `http://l
 
 In a separate browser tab connect to your fake `~zod`'s Landscape page which is `http://localhost:8080` or a custom port of you changed it
 
-Once the React server and Urbit ship are up and running enter `+cors-registry` in your ship's dojo. You will likely see two URLs in the `requests` entry:
+Once the React server and Urbit ship are up and running enter `+cors-registry` in your ship's dojo. You will likely see the following URL in the `requests` entry:
 
 `~~http~3a.~2f.~2f.localhost~3a.3000`
-and
-`~~http~3a.~2f.~2f.localhost~3a.8080`
 
-You'll need to add both to the approved list by running:
+You'll need to add it to the approved list by running:
 
 `|cors-approve ~~http~3a.~2f.~2f.localhost~3a.3000`
-and
-`|cors-approve ~~http~3a.~2f.~2f.localhost~3a.8080` in dojo
 
-Verfiy these commands worked by running `+cors-registry` again.
+Verfiy this command worked by running `+cors-registry` again.
 
 ## Using the interface
 
