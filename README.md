@@ -20,9 +20,9 @@ and
 
 You'll need to add it to the approved list by running:
 
-`|cors-approve ~~http~3a.~2f.~2f.localhost~3a.3000`
-and
-`|cors-approve ~~http~3a.~2f.~2f.localhost~3a.8080`
+`|cors-approve ~~http~3a.~2f.~2f.localhost~3a.3000`<br>
+and<br>
+`|cors-approve ~~http~3a.~2f.~2f.localhost~3a.8080`<br>
 
 Verfiy these commands worked by running `+cors-registry` again.
 
