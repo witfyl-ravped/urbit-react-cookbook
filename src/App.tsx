@@ -306,6 +306,34 @@ const App = () => {
     console.log(channel, group);
   }
 
+  const RenderRemoveMembers = () => {
+    const [selectedGroup, setSelectedGroup] = useState("0");
+    return (
+      <div>
+        <select
+          value={selectedGroup}
+          onChange={(e) => setSelectedGroup(e.target.value)}
+        >
+          <option>Select a Group</option>
+          {groups.map((group, index) => (
+            <option key={group.name} value={index}>
+              {group.name}
+            </option>
+          ))}
+        </select>
+        <br />
+        <select id="member" name="member">
+          <option>Select a Member</option>
+          {groups[0]
+            ? groups[parseInt(selectedGroup)].group.members.map((member) => {
+                return <option value={member}>{member}</option>;
+              })
+            : null}
+        </select>
+      </div>
+    );
+  };
+
   return (
     <div className="App">
       <header className="App-header">
@@ -474,7 +502,8 @@ const App = () => {
               </form>
             </td>
             <td>
-              <form
+              <RenderRemoveMembers />
+              {/* <form
                 onSubmit={(e: React.SyntheticEvent) => {
                   e.preventDefault();
                   const target = e.target as typeof e.target & {
@@ -486,28 +515,34 @@ const App = () => {
                   addMembersLocal(group, member);
                 }}
               >
-                {/* Here we leverage our groups state variable to render a dropdown list of available groups to create channels(chats) in */}
+                <select
+                  id="groupId"
+                  name="groupId"
+                  onChange={(e: React.SyntheticEvent) => {
+                    const target = e.target as typeof e.target & {
+                      groupId: { value: number };
+                    };
+                    const groupId = target.groupId.value;
+                    updateGroupUI(groupId);
+                  }}
+                >
+                  <option>Select a Group</option>
+                  {groups.map((group, index) => (
+                    <option value={index}>{group.name}</option>
+                  ))}
+                </select>
+                <br />
                 <select id="member" name="member">
-                  <option>Select a Groupie</option>
+                  <option>Select a Member</option>
                   {groups[0]
                     ? groups[0].group.members.map((member) => {
-                        console.log("proof", member);
-                        // group.group.members.map((member) => (
-                        <option value={member}>{member}</option>;
-                        // ));
+                        return <option value={member}>{member}</option>;
                       })
                     : null}
                 </select>
                 <br />
-                {/* <select id="member" name="member">
-                  <option>Select a Group</option>
-                  {groups.map((group) => (
-                    <option value={group.name}>{group.name}</option>
-                  ))}
-                </select> */}
-                <br />
                 <input type="submit" value="Remove Member" />
-              </form>
+              </form> */}
             </td>
           </tr>
           <tr>
