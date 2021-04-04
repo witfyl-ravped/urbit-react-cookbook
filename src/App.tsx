@@ -19,6 +19,7 @@ import {
   Path,
   remove,
   deSig,
+  addMembers,
 } from "@urbit/api";
 
 // This is how we establish a connection with out ship. We pass the port that our fake ship is running on along with
@@ -249,6 +250,18 @@ const App = () => {
     alert("Message sent");
   }
 
+  function addMembersLocal(group: Path, ship: string) {
+    if (!urb) return;
+
+    const shipArray: string[] = [];
+    shipArray.push(ship);
+    const groupResource = resourceFromPath(group);
+    urb.poke(addMembers(groupResource, shipArray));
+
+    window.confirm(`Added ${ship} to ${group}`);
+    window.location.reload();
+  }
+
   // Function to remove a group from our React UI
   function removeGroupLocal(group: string) {
     if (!urb) return;
@@ -401,6 +414,51 @@ const App = () => {
                 <input type="message" name="message" placeholder="Message" />
                 <br />
                 <input type="submit" value="Send Message" />
+              </form>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <div style={{ justifyContent: "center" }}>
+                <pre>Add Members</pre>
+              </div>
+            </td>
+            <td>
+              <div style={{ justifyContent: "center" }}>
+                <pre>Send Invites</pre>
+              </div>
+            </td>
+            <td>
+              <div style={{ justifyContent: "center" }}>
+                <pre>Something Else</pre>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <form
+                onSubmit={(e: React.SyntheticEvent) => {
+                  e.preventDefault();
+                  const target = e.target as typeof e.target & {
+                    group: { value: string };
+                    member: { value: string };
+                  };
+                  const group = target.group.value;
+                  const member = target.member.value;
+                  addMembersLocal(group, member);
+                }}
+              >
+                {/* Here we leverage our groups state variable to render a dropdown list of available groups to create channels(chats) in */}
+                <select id="group" name="group">
+                  <option>Select a Group</option>
+                  {groups.map((group) => (
+                    <option value={group}>{group}</option>
+                  ))}
+                </select>
+                <br />
+                <input type="member" name="member" placeholder="Ship Name" />
+                <br />
+                <input type="submit" value="Add Member" />
               </form>
             </td>
           </tr>
