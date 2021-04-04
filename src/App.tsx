@@ -21,6 +21,7 @@ import {
   deSig,
   addMembers,
   Group,
+  removeMembers,
 } from "@urbit/api";
 
 // This is how we establish a connection with out ship. We pass the port that our fake ship is running on along with
@@ -274,6 +275,18 @@ const App = () => {
     window.location.reload();
   }
 
+  function removeMembersLocal(group: Path, ship: string) {
+    if (!urb) return;
+
+    const shipArray: string[] = [];
+    shipArray.push(`~${ship}`);
+    const groupResource = resourceFromPath(group);
+    urb.poke(removeMembers(groupResource, shipArray));
+
+    window.confirm(`Removeed ${ship} from ${group}`);
+    // window.location.reload();
+  }
+
   // Function to remove a group from our React UI
   function removeGroupLocal(group: string) {
     if (!urb) return;
@@ -309,7 +322,18 @@ const App = () => {
   const RenderRemoveMembers = () => {
     const [selectedGroup, setSelectedGroup] = useState("0");
     return (
-      <div>
+      <form
+        onSubmit={(e: React.SyntheticEvent) => {
+          e.preventDefault();
+          const target = e.target as typeof e.target & {
+            group: { value: string };
+            member: { value: string };
+          };
+          const group = groups[parseInt(selectedGroup)].name;
+          const member = target.member.value;
+          removeMembersLocal(group, member);
+        }}
+      >
         <select
           value={selectedGroup}
           onChange={(e) => setSelectedGroup(e.target.value)}
@@ -330,7 +354,9 @@ const App = () => {
               })
             : null}
         </select>
-      </div>
+        <br />
+        <input type="submit" value="Remove Member" />
+      </form>
     );
   };
 
