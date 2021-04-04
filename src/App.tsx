@@ -19,7 +19,11 @@ import {
   Path,
   remove,
   deSig,
+  addMembers,
+  Group,
+  removeMembers,
 } from "@urbit/api";
+import { invite } from "@urbit/api/dist/groups";
 
 // This is how we establish a connection with out ship. We pass the port that our fake ship is running on along with
 // its code into the Urbit object we imported above. Notice that we then manually assign the name of our ship by declaring 'urb.ship'
@@ -43,7 +47,7 @@ const App = () => {
   const [urb, setUrb] = useState<UrbitInterface | undefined>(); // stores our Urbit connection. Notice we declare the type as UrbitInterface
   const [sub, setSub] = useState<number | undefined>(); // Currently managing all subscriptions with one state object. This will most likely change with future api fixes
   const [log, setLog] = useState<string>(""); // State object for the log we keep of incoming messages for display
-  const [groups, setGroups] = useState<string[]>([]); // State object to keep track of the list of groups our ship belongs to
+  const [groups, setGroups] = useState<GroupWName[]>([]); // State object to keep track of the list of groups our ship belongs to
   const [keys, setKeys] = useState<Path[]>([]); // Same as above but for channels(chats). I'm keeping the variable name 'keys' as that is the term used in graph-store
 
   // We use useEffect to run our createApi function above to establish and store our connection to our ship
@@ -103,9 +107,20 @@ const App = () => {
   );
 
   // Callback function that we pass into the group-store (not graph-store!) subscription to grab all of the groups that our ship is a member of
+  interface GroupWName {
+    name: string;
+    group: Group;
+  }
   const groupArray = useCallback(
     (groups) => {
-      setGroups(Object.keys(groups.groupUpdate.initial));
+      console.log(groups);
+      const groupsArray: GroupWName[] = [];
+      Object.keys(groups.groupUpdate.initial).forEach((key) => {
+        // console.log({ key: groups.groupUpdate.initial[key] });
+        groupsArray.push({ name: key, group: groups.groupUpdate.initial[key] });
+      });
+      console.log(groupsArray);
+      setGroups(groupsArray);
     },
     [groups]
   );
@@ -249,6 +264,30 @@ const App = () => {
     alert("Message sent");
   }
 
+  function addMembersLocal(group: Path, ship: string) {
+    if (!urb) return;
+
+    const shipArray: string[] = [];
+    shipArray.push(ship);
+    const groupResource = resourceFromPath(group);
+    urb.poke(addMembers(groupResource, shipArray));
+
+    window.confirm(`Added ${ship} to ${group}`);
+    window.location.reload();
+  }
+
+  function removeMembersLocal(group: Path, ship: string) {
+    if (!urb) return;
+
+    const shipArray: string[] = [];
+    shipArray.push(`~${ship}`);
+    const groupResource = resourceFromPath(group);
+    urb.poke(removeMembers(groupResource, shipArray));
+
+    window.confirm(`Removeed ${ship} from ${group}`);
+    window.location.reload();
+  }
+
   // Function to remove a group from our React UI
   function removeGroupLocal(group: string) {
     if (!urb) return;
@@ -279,6 +318,65 @@ const App = () => {
     // const channelResource = resourceFromPath(channel);
     urb.poke(remove("chat", channel, group));
     console.log(channel, group);
+  }
+
+  // We're using a functional component here because removing members from groups requires a little extra logic to create a list of members from a
+  // group in real time
+  const RenderRemoveMembers = () => {
+    const [selectedGroup, setSelectedGroup] = useState("default");
+    return (
+      <form
+        onSubmit={(e: React.SyntheticEvent) => {
+          e.preventDefault();
+          const target = e.target as typeof e.target & {
+            group: { value: string };
+            member: { value: string };
+          };
+          const group = groups[parseInt(selectedGroup)].name;
+          const member = target.member.value;
+          removeMembersLocal(group, member);
+        }}
+      >
+        <select
+          value={selectedGroup}
+          onChange={(e) => setSelectedGroup(e.target.value)}
+        >
+          <option key="default" value="default">
+            Select a Group
+          </option>
+          {groups.map((group, index) => (
+            <option key={group.name} value={index}>
+              {group.name}
+            </option>
+          ))}
+        </select>
+        <br />
+        <select id="member" name="member">
+          <option>Select a Member</option>
+          {groups[0] && selectedGroup !== "default"
+            ? groups[parseInt(selectedGroup)].group.members.map((member) => {
+                return <option value={member}>{member}</option>;
+              })
+            : null}
+        </select>
+        <br />
+        <input type="submit" value="Remove Member" />
+      </form>
+    );
+  };
+
+  function inviteLocal(group: string, ship: string, description: string) {
+    if (!urb) return;
+
+    const groupResource = resourceFromPath(group);
+    const shipArray: string[] = [];
+    shipArray.push(ship);
+    urb.thread(
+      invite(groupResource.ship, groupResource.name, shipArray, description)
+    );
+
+    window.confirm(`Invited ${ship} to ${group}`);
+    window.location.reload();
   }
 
   return (
@@ -359,7 +457,7 @@ const App = () => {
                 <select id="group" name="group">
                   <option>Select a Group</option>
                   {groups.map((group) => (
-                    <option value={group}>{group}</option>
+                    <option value={group.name}>{group.name}</option>
                   ))}
                 </select>
                 <br />
@@ -407,6 +505,87 @@ const App = () => {
           <tr>
             <td>
               <div style={{ justifyContent: "center" }}>
+                <pre>Add Members</pre>
+              </div>
+            </td>
+            <td>
+              <div style={{ justifyContent: "center" }}>
+                <pre>Remove Members</pre>
+              </div>
+            </td>
+            <td>
+              <div style={{ justifyContent: "center" }}>
+                <pre>Invite Members</pre>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <form
+                onSubmit={(e: React.SyntheticEvent) => {
+                  e.preventDefault();
+                  const target = e.target as typeof e.target & {
+                    group: { value: string };
+                    member: { value: string };
+                  };
+                  const group = target.group.value;
+                  const member = target.member.value;
+                  addMembersLocal(group, member);
+                }}
+              >
+                {/* Here we leverage our groups state variable to render a dropdown list of available groups to create channels(chats) in */}
+                <select id="group" name="group">
+                  <option>Select a Group</option>
+                  {groups.map((group) => (
+                    <option value={group.name}>{group.name}</option>
+                  ))}
+                </select>
+                <br />
+                <input type="member" name="member" placeholder="Ship Name" />
+                <br />
+                <input type="submit" value="Add Member" />
+              </form>
+            </td>
+            <td>
+              <RenderRemoveMembers />
+            </td>
+            <td>
+              <form
+                onSubmit={(e: React.SyntheticEvent) => {
+                  e.preventDefault();
+                  const target = e.target as typeof e.target & {
+                    group: { value: string };
+                    ship: { value: string };
+                    description: { value: string };
+                  };
+                  const group = target.group.value;
+                  const ship = target.ship.value;
+                  const description = target.description.value;
+                  inviteLocal(group, ship, description);
+                }}
+              >
+                <select id="group" name="group">
+                  <option>Select a Group</option>
+                  {groups.map((group) => (
+                    <option value={group.name}>{group.name}</option>
+                  ))}
+                </select>
+                <br />
+                <input type="ship" name="ship" placeholder="~sampel-palnet" />
+                <br />
+                <input
+                  type="description"
+                  name="description"
+                  placeholder="Invite Message"
+                />
+                <br />
+                <input type="submit" value="Send Invite" />
+              </form>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <div style={{ justifyContent: "center" }}>
                 <pre>Remove Group</pre>
               </div>
             </td>
@@ -436,7 +615,7 @@ const App = () => {
                 <select id="group" name="group">
                   <option>Select a Group</option>
                   {groups.map((group) => (
-                    <option value={group}>{group}</option>
+                    <option value={group.name}>{group.name}</option>
                   ))}
                 </select>
                 <br />
