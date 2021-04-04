@@ -23,6 +23,7 @@ import {
   Group,
   removeMembers,
 } from "@urbit/api";
+import { invite } from "@urbit/api/dist/groups";
 
 // This is how we establish a connection with out ship. We pass the port that our fake ship is running on along with
 // its code into the Urbit object we imported above. Notice that we then manually assign the name of our ship by declaring 'urb.ship'
@@ -284,7 +285,7 @@ const App = () => {
     urb.poke(removeMembers(groupResource, shipArray));
 
     window.confirm(`Removeed ${ship} from ${group}`);
-    // window.location.reload();
+    window.location.reload();
   }
 
   // Function to remove a group from our React UI
@@ -319,8 +320,10 @@ const App = () => {
     console.log(channel, group);
   }
 
+  // We're using a functional component here because removing members from groups requires a little extra logic to create a list of members from a
+  // group in real time
   const RenderRemoveMembers = () => {
-    const [selectedGroup, setSelectedGroup] = useState("0");
+    const [selectedGroup, setSelectedGroup] = useState("default");
     return (
       <form
         onSubmit={(e: React.SyntheticEvent) => {
@@ -338,7 +341,9 @@ const App = () => {
           value={selectedGroup}
           onChange={(e) => setSelectedGroup(e.target.value)}
         >
-          <option>Select a Group</option>
+          <option key="default" value="default">
+            Select a Group
+          </option>
           {groups.map((group, index) => (
             <option key={group.name} value={index}>
               {group.name}
@@ -348,7 +353,7 @@ const App = () => {
         <br />
         <select id="member" name="member">
           <option>Select a Member</option>
-          {groups[0]
+          {groups[0] && selectedGroup !== "default"
             ? groups[parseInt(selectedGroup)].group.members.map((member) => {
                 return <option value={member}>{member}</option>;
               })
@@ -359,6 +364,20 @@ const App = () => {
       </form>
     );
   };
+
+  function inviteLocal(group: string, ship: string, description: string) {
+    if (!urb) return;
+
+    const groupResource = resourceFromPath(group);
+    const shipArray: string[] = [];
+    shipArray.push(ship);
+    urb.thread(
+      invite(groupResource.ship, groupResource.name, shipArray, description)
+    );
+
+    window.confirm(`Invited ${ship} to ${group}`);
+    window.location.reload();
+  }
 
   return (
     <div className="App">
@@ -496,7 +515,7 @@ const App = () => {
             </td>
             <td>
               <div style={{ justifyContent: "center" }}>
-                <pre>Something Else</pre>
+                <pre>Invite Members</pre>
               </div>
             </td>
           </tr>
@@ -529,46 +548,39 @@ const App = () => {
             </td>
             <td>
               <RenderRemoveMembers />
-              {/* <form
+            </td>
+            <td>
+              <form
                 onSubmit={(e: React.SyntheticEvent) => {
                   e.preventDefault();
                   const target = e.target as typeof e.target & {
                     group: { value: string };
-                    member: { value: string };
+                    ship: { value: string };
+                    description: { value: string };
                   };
                   const group = target.group.value;
-                  const member = target.member.value;
-                  addMembersLocal(group, member);
+                  const ship = target.ship.value;
+                  const description = target.description.value;
+                  inviteLocal(group, ship, description);
                 }}
               >
-                <select
-                  id="groupId"
-                  name="groupId"
-                  onChange={(e: React.SyntheticEvent) => {
-                    const target = e.target as typeof e.target & {
-                      groupId: { value: number };
-                    };
-                    const groupId = target.groupId.value;
-                    updateGroupUI(groupId);
-                  }}
-                >
+                <select id="group" name="group">
                   <option>Select a Group</option>
-                  {groups.map((group, index) => (
-                    <option value={index}>{group.name}</option>
+                  {groups.map((group) => (
+                    <option value={group.name}>{group.name}</option>
                   ))}
                 </select>
                 <br />
-                <select id="member" name="member">
-                  <option>Select a Member</option>
-                  {groups[0]
-                    ? groups[0].group.members.map((member) => {
-                        return <option value={member}>{member}</option>;
-                      })
-                    : null}
-                </select>
+                <input type="ship" name="ship" placeholder="~sampel-palnet" />
                 <br />
-                <input type="submit" value="Remove Member" />
-              </form> */}
+                <input
+                  type="description"
+                  name="description"
+                  placeholder="Invite Message"
+                />
+                <br />
+                <input type="submit" value="Send Invite" />
+              </form>
             </td>
           </tr>
           <tr>
