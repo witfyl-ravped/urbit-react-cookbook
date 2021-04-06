@@ -50,7 +50,7 @@ const App = () => {
   const [groups, setGroups] = useState<GroupWName[]>([]); // State object to keep track of the list of groups our ship belongs to
   const [keys, setKeys] = useState<Path[]>([]); // Same as above but for channels(chats). I'm keeping the variable name 'keys' as that is the term used in graph-store
 
-  // We use useEffect to run our createApi function above to establish and store our connection to our ship
+  // We use useEffect to run our createApi function above to establish and store our connection to our ship. useEffect runs after the initial render in the React lifecycle
   useEffect(() => {
     const _urb = createApi();
     setUrb(_urb);
@@ -81,24 +81,14 @@ const App = () => {
       });
       setLog(`${log}\n${newMessage}`); // This is the React Hooks pattern. The above code formats the message and then we use setLog to store it in state
     },
-    [log] // Again part of the React Hooks pattern. This keeps an eye on whether the log has changed to know when to run the above on new data
+    [log] // Again part of the React Hooks pattern. This keeps track of whether the log has changed to know when there is new data to process
   );
-
-  // An example of creating a TypeScript resource for Hoon data structure. In this case a Resource which is a name and a ship that we will use to parse
-  // chat names below
-  // interface Resource {
-  //   name: string;
-  //   ship: string;
-  // }
 
   // Callback function that we pass into the graph-store subscription to grab all of our ships keys i.e. chat names
   const keysArray = useCallback(
     (keys) => {
-      console.log(keys);
       let keyArray: Path[] = [];
       keys["graph-update"]["keys"].forEach((key: Resource) => {
-        // const path = resourceAsPath(key);
-        // console.log(path);
         keyArray.push(resourceAsPath(key));
       });
       setKeys(keyArray);
@@ -107,16 +97,18 @@ const App = () => {
   );
 
   // Callback function that we pass into the group-store (not graph-store!) subscription to grab all of the groups that our ship is a member of
+  // GroupWName is a custom TypeScript interface I created so we can pass the name of a group along with it's contents. This may get integrated into the API in the future
+  // For now it serves as a demo should you want to create your own for specific uses
   interface GroupWName {
     name: string;
     group: Group;
   }
+
   const groupArray = useCallback(
     (groups) => {
       console.log(groups);
       const groupsArray: GroupWName[] = [];
       Object.keys(groups.groupUpdate.initial).forEach((key) => {
-        // console.log({ key: groups.groupUpdate.initial[key] });
         groupsArray.push({ name: key, group: groups.groupUpdate.initial[key] });
       });
       console.log(groupsArray);
@@ -126,7 +118,7 @@ const App = () => {
   );
 
   // Now we use useEffect to establish our subscriptions to our ship. Notice that subscriptions are called directly on our Urbit object using
-  // urb.subscribe. This first one parses incoming messages to add to our log
+  // urb.subscribe. This first one parses chat messages to add to our log
   useEffect(() => {
     if (!urb || sub) return;
     urb
@@ -185,12 +177,12 @@ const App = () => {
       .toLowerCase();
   }
 
-  // Now we start defining graph-store actions that are called directly on our Urbit object using urb.thread. Threads are the main way that we send
+  // Now we start defining graph-store actions that are called directly on our Urbit object using urb.thread(). Threads are the main way that we send
   // commands to graph-store. This example uses them to create groups/chats and send messages. This first function is used to create a group
   function createGroupLocal(groupName: string, description: string) {
     if (!urb) return;
     urb.thread(
-      // Notice that unlike subscriptions above, we pass a formatting function into our thread function. In this case it is createGroupLocal
+      // Notice that unlike subscriptions above, we pass a formatting function into our thread function. In this case it is createGroup
       // I'm using default values for the 'open' object but you can create a UI to allow users to input custom values.
       createGroup(
         // The name variable stays under the hood and we use our helper format function to create it from the groupName
@@ -231,7 +223,7 @@ const App = () => {
     return result;
   }
 
-  // Similar to createGroupLocal above we use urb.thread to create a channel via graph-store.
+  // Similar to createGroupLocal above, we use urb.thread() to create a channel via graph-store.
   function createChannelLocal(
     group: string,
     chat: string,
@@ -250,25 +242,28 @@ const App = () => {
     window.location.reload();
   }
 
-  // Our function to send messages to a channel(chat) defined by the user in our UI
+  // Our function to send messages to a channel(chat) by the user in our React UI
   function sendMessage(message: string, key: Path) {
     if (!urb || !urb.ship) return;
 
-    // Notice that this requires an extra formatting function. First we use createPost to format the message from the browser
+    // Notice that this requires an extra formatting functions. First we use createPost to format the message from the browser
     const post = createPost(urb.ship, [{ text: message }]);
-    // Then we wrap our newly formatted post in the addPost function and pass that into urb.thread. Notice we'll have to translate our
-    // key name (Path) back to a Resource in order for us to grab the name for the addPost function
-    // We've now formatted our user message properly for graph-store to parse
+    // Then we wrap our newly formatted post in the addPost() function and pass that into urb.thread(). Notice we'll have to translate our
+    // key name (Path) back to a Resource in order for us to grab the name for the addPost() function
     const keyResource = resourceFromPath(key);
+    // We've now formatted our user message properly for graph-store to parse via urb.thread()
     urb.thread(addPost(`~${urb.ship}`, keyResource.name, post));
     alert("Message sent");
   }
 
+  // This is our React function to add members to a group
   function addMembersLocal(group: Path, ship: string) {
     if (!urb) return;
 
+    // Since addMembers() accepts a multiple ships, we'll have to create an array out of our ship even though we are only sending in one ship at a time in our example
     const shipArray: string[] = [];
     shipArray.push(ship);
+    // We also need to coerce our group Path into a Resource to accommodate addMembers() data types
     const groupResource = resourceFromPath(group);
     urb.poke(addMembers(groupResource, shipArray));
 
@@ -276,6 +271,7 @@ const App = () => {
     window.location.reload();
   }
 
+  // Our React function to remove members from a group. Requires the same formatting steps as addMembersLocal()
   function removeMembersLocal(group: Path, ship: string) {
     if (!urb) return;
 
@@ -288,10 +284,9 @@ const App = () => {
     window.location.reload();
   }
 
-  // Function to remove a group from our React UI
+  // React function to remove a group from our ship
   function removeGroupLocal(group: string) {
     if (!urb) return;
-    // This is a standard practice of using the resourceFromPath function to convert a Path string into our Resource interface
     const groupResource = resourceFromPath(group);
     // Here we're passing a thread the deleteGroup function from the groups library and destructuring the ship and name from
     // the group resource we created above
@@ -300,29 +295,31 @@ const App = () => {
     window.location.reload();
   }
 
-  // Function to remove a channel from our React UI
+  // React function to remove a channel(chat) from a group on our ship
   function removeChannelLocal(channel: Path) {
     if (!urb) return;
     const channelResource = resourceFromPath(channel);
-    // Similar to group we're converting the Path string to a Resource type
-    // Notice below that we use the deSig function. You'll notice that different functions have different formatting processes
+    // Similar to removeGroupLocal we're converting the Path string to a Resource type
+    // Notice below that we use the deSig function. Different API functions have different formatting processes
     // deSig will remove the ~ from the ship name because deleteGraph is instructed to add one. Without deSig we would
-    // end up with ~~zod
+    // end up with "~~zod"
     urb.thread(deleteGraph(deSig(channelResource.ship), channelResource.name));
     window.confirm(`Removed channel ${channel}`);
     window.location.reload();
   }
 
+  // There seems to be a bug that keeps channel names in a ships metadata if its parent group is deleted. This was my attempt to remove them, we haven't figured this one out yet
   function removeChannelMetadata(channel: Path, group: string) {
     if (!urb) return;
-    // const channelResource = resourceFromPath(channel);
     urb.poke(remove("chat", channel, group));
     console.log(channel, group);
   }
 
-  // We're using a functional component here because removing members from groups requires a little extra logic to create a list of members from a
-  // group in real time
+  // We're using a functional component here to render the UI because removing members from groups requires a little extra logic
+  // We want the user to select between groups to render a list of each groups members. We need the extra steps since the member list is derived from the group Path
+  // This is different from our other functions since our user is creating an action based on pre-populated lists rather than their own text input
   const RenderRemoveMembers = () => {
+    // Making this a functional component gives us access to the useState hook for free. We'll use this to populate lists of members from user input
     const [selectedGroup, setSelectedGroup] = useState("default");
     return (
       <form
@@ -351,6 +348,7 @@ const App = () => {
           ))}
         </select>
         <br />
+        {/* This is the extra step needed to create a member list based on which group our user selects*/}
         <select id="member" name="member">
           <option>Select a Member</option>
           {groups[0] && selectedGroup !== "default"
@@ -365,6 +363,7 @@ const App = () => {
     );
   };
 
+  // Since React function to populate the @urbit/api invite() function which we send to your ship via thread
   function inviteLocal(group: string, ship: string, description: string) {
     if (!urb) return;
 
@@ -533,7 +532,7 @@ const App = () => {
                   addMembersLocal(group, member);
                 }}
               >
-                {/* Here we leverage our groups state variable to render a dropdown list of available groups to create channels(chats) in */}
+                {/* Here we leverage our groups state variable to render a dropdown list of available groups that the user can add members to */}
                 <select id="group" name="group">
                   <option>Select a Group</option>
                   {groups.map((group) => (
@@ -547,9 +546,11 @@ const App = () => {
               </form>
             </td>
             <td>
+              {/* Here we render our functional component to allow users to remove members from groups*/}
               <RenderRemoveMembers />
             </td>
             <td>
+              {/* Same pattern as the simple functions above to format user input, this time for the invite() function*/}
               <form
                 onSubmit={(e: React.SyntheticEvent) => {
                   e.preventDefault();
@@ -602,6 +603,7 @@ const App = () => {
           </tr>
           <tr>
             <td>
+              {/* The forms below are the same format we're used to seeing when handling user text input for our formatting functins above */}
               <form
                 onSubmit={(e: React.SyntheticEvent) => {
                   e.preventDefault();
