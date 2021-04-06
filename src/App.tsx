@@ -540,7 +540,11 @@ const App = () => {
                   ))}
                 </select>
                 <br />
-                <input type="member" name="member" placeholder="Ship Name" />
+                <input
+                  type="member"
+                  name="member"
+                  placeholder="~sampel-palnet"
+                />
                 <br />
                 <input type="submit" value="Add Member" />
               </form>

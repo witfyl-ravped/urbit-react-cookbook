@@ -44,6 +44,28 @@ Verfiy these commands worked by running `+cors-registry` again.
 <li>Your message should now appear at the top of the React app. You can navigate back to your Landscape window to see the message you just sent from React displayed in the newly created channel.<br>
 <li>Notice that you can send a message to the channel from Landscape and that it will also appear at the top of the React app.<br>
 
+###### Adding Members
+
+<li>In this input select a Group that you have created from the dropdown menu and enter a ship with '~' prefix. Then press "Add Member"<br>
+<li>Confirm that the member has been added via Group info in Landscape. You can find this information be clicking on the Group tile. Then the gear icon in the top left corner of the group. From there click on Participants and confirm the ship you added is listed<br>
+<li>Try adding a few different ships<br>
+
+###### Removing Members
+
+<li>First select one of the groups you created from the "Select a Group" drop down in this section<br>
+<li>After selecting a group the list of members will auto-populate in the "Select a Member" dropdown. Select a member from this list<br>
+<li>Now click "Remove Member" and then confirm that this user was indeed removed via your Landscape interface<br>
+
+###### Inviting Members
+
+<li>To fully test this function we recommend booting another fake ship on your local network. Follow the instructions in the introduction to this guide for support in creating and booting fake ships. Call this second one `~mus`<br>
+<li>After `~mus` is running, you should see `~zod is your neighbor` displayed in its terminal. Check which port it is running on by looking for a message similar to this: `http: web interface live on http://localhost:8081` in the startup text. Use that link to log into it's Landscape interface<br>
+<li>Back in the React interface, select a group under the "Invite Members" heading<br>
+<li>Enter the name of your new fake ship in the input below, `~mus` in my case<br>
+<li>Then enter a message and press "Send Invite"<br>
+<li>After clicking "Ok" in confirmation popup, navigate to the `~mus` Landscape interface. After a few moments you should receive a notification ontop of the Leap menu in the top left corner. Click on it to accept your invite and join the group.<br>
+<li>Once inside the group you will have access the channel(chat) you created in the previous step. Notice that you can send a message in the chat from `~mus` and it will display at the top of our React interface<br>
+
 ###### Removing Channels
 
 <li>To test this function start by adding a new channel under the Create Channel heading.<br>
@@ -57,3 +79,7 @@ Verfiy these commands worked by running `+cors-registry` again.
 <li>Choose your group from "Select a Group" dropdown under the "Remove Group" header and click "Remove Group".<br>
 <li>Click OK and verify that the group and its tile has been removed from Landscape.<br>
 <li>Also verify that the channel it contained is no longer listed in either of the "Select a Channel" drop down menus.<br>
+
+###### Removing Channel Metadata
+
+<li>This is a work in progress. There seems to be a bug in which channel metadata lingers after its parent group is deleted. I've been attempting to clear it and will add this functionality once the issue is resolved
