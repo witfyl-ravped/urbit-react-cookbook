@@ -28,18 +28,22 @@ import { invite } from "@urbit/api/dist/groups";
 // This is how we establish a connection with out ship. We pass the port that our fake ship is running on along with
 // its code into the Urbit object we imported above. Notice that we then manually assign the name of our ship by declaring 'urb.ship'
 // This gets called when initializing our state in the App function below
-const createApi = _.memoize(
-  (): UrbitInterface => {
-    const urb = new Urbit(
-      "http://localhost:8080",
-      "lidlut-tabwed-pillex-ridrup"
-    );
-    urb.ship = "zod";
-    urb.onError = (message) => console.log(message);
-    urb.connect();
-    return urb;
-  }
-);
+
+// const urb = new Urbit("http://localhost:80", "lidlut-tabwed-pillex-ridrup");
+
+if (localStorage.getItem("host")) {
+  useEffect(() => {});
+}
+const createApi = (code: string, host: string) =>
+  _.memoize(
+    (): UrbitInterface => {
+      const urb = new Urbit(code, host);
+      urb.ship = "zod";
+      urb.onError = (message) => console.log(message);
+      urb.connect();
+      return urb;
+    }
+  );
 
 // Here we create out app's functional component. We begin by using useState to create state objects for all of the data we're calling out of our ship
 // Also notice that we create a state object for urb that gets set when we call the createApi function
@@ -51,11 +55,22 @@ const App = () => {
   const [keys, setKeys] = useState<Path[]>([]); // Same as above but for channels(chats). I'm keeping the variable name 'keys' as that is the term used in graph-store
 
   // We use useEffect to run our createApi function above to establish and store our connection to our ship. useEffect runs after the initial render in the React lifecycle
-  useEffect(() => {
-    const _urb = createApi();
+  const login = (host: string, code: string) => {
+    let loginHost;
+    let loginCode;
+    if (localStorage.getItem("host")) {
+      loginHost = localStorage.getItem("host")!;
+      loginCode = localStorage.getItem("code")!;
+    } else {
+      loginHost = host;
+      loginCode = code;
+      localStorage.setItem("host", host);
+      localStorage.setItem("code", code);
+    }
+    const _urb = createApi(host, code);
     setUrb(_urb);
     return () => {};
-  }, [setUrb]);
+  };
 
   // Callback function that we will pass into our graph-store subscription that logs incoming messages to chats courtesy of ~radur-sivmus!
   const logHandler = useCallback(
@@ -381,10 +396,40 @@ const App = () => {
   return (
     <div className="App">
       <header className="App-header">
-        <pre>
-          Latest Message:
-          <br /> {log}
-        </pre>
+        <table width="100%">
+          <tr>
+            <td>
+              <pre>
+                Latest Message:
+                <br /> {log}
+              </pre>
+            </td>
+            <td>
+              <pre>Login:</pre>
+              <form
+                onSubmit={(e: React.SyntheticEvent) => {
+                  e.preventDefault();
+                  const target = e.target as typeof e.target & {
+                    host: { value: string };
+                    code: { value: string };
+                  };
+                  {
+                    /* We're just creating variables from the input fields defined below, createGroupLocal handles the formatting*/
+                  }
+                  const host = target.host.value;
+                  const code = target.code.value;
+                  login(host, code);
+                }}
+              >
+                <input type="host" name="host" placeholder="Host" />
+                <br />
+                <input type="code" name="code" placeholder="Code" />
+                <br />
+                <input type="submit" value="Login" />
+              </form>
+            </td>
+          </tr>
+        </table>
         <table width="100%">
           <tr>
             <td>
