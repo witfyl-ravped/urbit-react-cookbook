@@ -31,9 +31,6 @@ import { invite } from "@urbit/api/dist/groups";
 
 // const urb = new Urbit("http://localhost:80", "lidlut-tabwed-pillex-ridrup");
 
-if (localStorage.getItem("host")) {
-  useEffect(() => {});
-}
 const createApi = (code: string, host: string) =>
   _.memoize(
     (): UrbitInterface => {
@@ -55,6 +52,19 @@ const App = () => {
   const [keys, setKeys] = useState<Path[]>([]); // Same as above but for channels(chats). I'm keeping the variable name 'keys' as that is the term used in graph-store
 
   // We use useEffect to run our createApi function above to establish and store our connection to our ship. useEffect runs after the initial render in the React lifecycle
+  useEffect(() => {
+    if (localStorage.getItem("host")) {
+      const _urb = createApi(
+        localStorage.getItem("host")!,
+        localStorage.getItem("code")!
+      );
+      setUrb(_urb);
+      return () => {};
+    } else {
+      return;
+    }
+  }, [setUrb]);
+
   const login = (host: string, code: string) => {
     let loginHost;
     let loginCode;
