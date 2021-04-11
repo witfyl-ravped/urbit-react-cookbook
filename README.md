@@ -32,7 +32,7 @@ Verfiy these commands worked by running `+cors-registry` again.
 
 ###### Logging in
 
-<li> [Click here](loggingin.md) for a detailed walkthrough of the login flow you performed above
+<li> [Click here](https://github.com/witfyl-ravped/urbit-react-cookbook/blob/main/logginging.md) for a detailed walkthrough of the login flow you performed above
 
 ###### Creating Groups
 
