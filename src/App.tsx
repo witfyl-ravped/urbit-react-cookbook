@@ -64,7 +64,7 @@ const App = () => {
   // If our user has already logged in we run the createApi function with the credentials from localStorage to establish and store
   // our connection to our ship. useEffect runs after the initial render in the React lifecycle
   useEffect(() => {
-    if (loggedIn === false) {
+    if (loggedIn !== true) {
       return;
     } else {
       const _urb = createApi(
