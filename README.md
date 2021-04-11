@@ -30,6 +30,10 @@ Verfiy these commands worked by running `+cors-registry` again.
 
 ## Using the interface
 
+###### Logging in
+
+<li> [Click here](loggingin.md) for a detailed walkthrough of the login flow you performed above
+
 ###### Creating Groups
 
 <li>Start by adding a group using the form on the left of the React app. Enter a Group Name, Group Description and press "Create Group." Your browser will confirm the successful creation with an alert window.<br>
