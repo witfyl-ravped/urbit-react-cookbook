@@ -107,6 +107,6 @@ Click OK and verify that the group and its tile has been removed from Landscape.
 
 Also verify that the channel it contained is no longer listed in either of the "Select a Channel" drop down menus.
 
-## Removing Channel Metadata
+## Scrying Messages
 
-This is a work in progress. There seems to be a bug in which channel metadata lingers after its parent group is deleted. I've been attempting to clear it and will add this functionality once the issue is resolved
+Scry x numbers of messages from a chat
