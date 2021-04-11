@@ -123,12 +123,10 @@ const App = () => {
 
   const handleGroups = useCallback(
     (groups) => {
-      console.log(groups);
       const groupsArray: GroupWName[] = [];
       Object.keys(groups.groupUpdate.initial).forEach((key) => {
         groupsArray.push({ name: key, group: groups.groupUpdate.initial[key] });
       });
-      console.log(groupsArray);
       setGroups(groupsArray);
     },
     [groups]
