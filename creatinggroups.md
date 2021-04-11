@@ -17,6 +17,8 @@ This is defined on line 119. It consists of a `name` string and a group `Group` 
   }
 ```
 
+## Subscribing to Groups
+
 Skipping down to line 157 we see:
 
 ```
