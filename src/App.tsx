@@ -49,6 +49,8 @@ const App = () => {
   const [groups, setGroups] = useState<GroupWName[]>([]); // State object to keep track of the list of groups our ship belongs to
   const [keys, setKeys] = useState<Path[]>([]); // Same as above but for channels(chats). I'm keeping the variable name 'keys' as that is the term used in graph-store
 
+  console.log(loggedIn);
+
   // We use useEffect to check if the user already has log in credentials stored in localStorage from a previous session. If so then we set our loggedIn
   // state variable to true
   useEffect(() => {
