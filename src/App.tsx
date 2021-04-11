@@ -429,9 +429,7 @@ const App = () => {
                   type="host"
                   name="host"
                   placeholder={
-                    localStorage.getItem("host")
-                      ? localStorage.getItem("host")!
-                      : "Host"
+                    loggedIn ? localStorage.getItem("host")! : "Host"
                   }
                 />
                 <br />
@@ -439,9 +437,7 @@ const App = () => {
                   type="code"
                   name="code"
                   placeholder={
-                    localStorage.getItem("code")
-                      ? localStorage.getItem("code")!
-                      : "Code"
+                    loggedIn ? localStorage.getItem("code")! : "Code"
                   }
                 />
                 <br />

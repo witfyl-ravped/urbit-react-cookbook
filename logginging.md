@@ -103,12 +103,12 @@ This section starts on line 413. The first `<form>` tag is mostly boiler plate R
 Now we will use our `loggedIn` state variable to whether we should render UI for a user who has already logged in, or UI asking the user to login. We see this in the `placeholder` prop.
 
 ```
-localStorage.getItem("host")
-? localStorage.getItem("host")!
-: "Host"
+loggedIn ? localStorage.getItem("host")! : "Host"
 ```
 
-In the first line, just writing `localStorage.getItem("host")` actually means "if `localStorage.getItem("host")` is not null." The `?` is the equivalent of `then` and here we're having it render `host` from localStorage. As in, if `host` exists then use it as the placeholder. The `!` at the end of this line is to tell typescript that we know `host` will be a string. The `:` here serves as an `else` statement. If we don't already know the user's host then this placeholder serves as a prompt for them to enter it.
+Simply writing `loggedIn` actually means "if `loggedIn` is true." (You would write `!loggedIn` if you wanted "if `loggedIn` is false). The `?` is the equivalent of `then` and here we're having it render `host` from localStorage. As in, if the user is logged in then use `host` from `localStorage` as the placeholder. The `!` at the end of this line is to tell TypeScript that we know `host` will be a string.
+
+The `:` here serves as an `else` statement. If we don't already know the user's host then this placeholder serves as a prompt for them to enter it.
 
 Here is the rest of the code snippet. Notice we're doing the same thing for `code`. Again this is a very simple application of conditional rendering, you can use ternary operators to completely customize your UI for a user who is logged in versus one who isn't.
 
@@ -119,9 +119,7 @@ Here is the rest of the code snippet. Notice we're doing the same thing for `cod
                   type="host"
                   name="host"
                   placeholder={
-                    localStorage.getItem("host")
-                      ? localStorage.getItem("host")!
-                      : "Host"
+                    loggedIn ? localStorage.getItem("host")! : "Host"
                   }
                 />
                 <br />
@@ -129,9 +127,7 @@ Here is the rest of the code snippet. Notice we're doing the same thing for `cod
                   type="code"
                   name="code"
                   placeholder={
-                    localStorage.getItem("code")
-                      ? localStorage.getItem("code")!
-                      : "Code"
+                    loggedIn ? localStorage.getItem("code")! : "Code"
                   }
                 />
                 <br />
