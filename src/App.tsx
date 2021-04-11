@@ -31,10 +31,10 @@ import { invite } from "@urbit/api/dist/groups";
 
 // const urb = new Urbit("http://localhost:80", "lidlut-tabwed-pillex-ridrup");
 
-const createApi = (code: string, host: string) =>
+const createApi = (host: string, code: string) =>
   _.memoize(
     (): UrbitInterface => {
-      const urb = new Urbit(code, host);
+      const urb = new Urbit(host, code);
       urb.ship = "zod";
       urb.onError = (message) => console.log(message);
       urb.connect();
@@ -45,40 +45,41 @@ const createApi = (code: string, host: string) =>
 // Here we create out app's functional component. We begin by using useState to create state objects for all of the data we're calling out of our ship
 // Also notice that we create a state object for urb that gets set when we call the createApi function
 const App = () => {
+  const [loggedIn, setLoggedIn] = useState<boolean>();
   const [urb, setUrb] = useState<UrbitInterface | undefined>(); // stores our Urbit connection. Notice we declare the type as UrbitInterface
   const [sub, setSub] = useState<number | undefined>(); // Currently managing all subscriptions with one state object. This will most likely change with future api fixes
   const [log, setLog] = useState<string>(""); // State object for the log we keep of incoming messages for display
   const [groups, setGroups] = useState<GroupWName[]>([]); // State object to keep track of the list of groups our ship belongs to
   const [keys, setKeys] = useState<Path[]>([]); // Same as above but for channels(chats). I'm keeping the variable name 'keys' as that is the term used in graph-store
 
+  useEffect(() => {
+    if (localStorage.getItem("host") && localStorage.getItem("code")) {
+      console.log(localStorage.getItem("host"));
+      setLoggedIn(true);
+      console.log(loggedIn);
+    }
+  }, [setLoggedIn]);
+
   // We use useEffect to run our createApi function above to establish and store our connection to our ship. useEffect runs after the initial render in the React lifecycle
   useEffect(() => {
-    if (localStorage.getItem("host")) {
+    if (loggedIn === false) {
+      return;
+    } else {
       const _urb = createApi(
         localStorage.getItem("host")!,
         localStorage.getItem("code")!
       );
       setUrb(_urb);
       return () => {};
-    } else {
-      return;
     }
   }, [setUrb]);
 
   const login = (host: string, code: string) => {
-    let loginHost;
-    let loginCode;
-    if (localStorage.getItem("host")) {
-      loginHost = localStorage.getItem("host")!;
-      loginCode = localStorage.getItem("code")!;
-    } else {
-      loginHost = host;
-      loginCode = code;
-      localStorage.setItem("host", host);
-      localStorage.setItem("code", code);
-    }
+    localStorage.setItem("host", host);
+    localStorage.setItem("code", code);
     const _urb = createApi(host, code);
     setUrb(_urb);
+    setLoggedIn(true);
     return () => {};
   };
 
@@ -431,9 +432,25 @@ const App = () => {
                   login(host, code);
                 }}
               >
-                <input type="host" name="host" placeholder="Host" />
+                <input
+                  type="host"
+                  name="host"
+                  placeholder={
+                    localStorage.getItem("host")
+                      ? localStorage.getItem("host")!
+                      : "Host"
+                  }
+                />
                 <br />
-                <input type="code" name="code" placeholder="Code" />
+                <input
+                  type="code"
+                  name="code"
+                  placeholder={
+                    localStorage.getItem("code")
+                      ? localStorage.getItem("code")!
+                      : "Code"
+                  }
+                />
                 <br />
                 <input type="submit" value="Login" />
               </form>
