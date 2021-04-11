@@ -36,15 +36,17 @@ Verfiy these commands worked by running `+cors-registry` again.
 
 ###### Creating Groups
 
-[Click here](https://github.com/witfyl-ravped/urbit-react-cookbook/blob/main/creatinggroups.md) for a detailed walkthrough of the Creating Groups functions and UI
-
 <li>Start by adding a group using the form on the left of the React app. Enter a Group Name, Group Description and press "Create Group." Your browser will confirm the successful creation with an alert window.<br>
 <li>After clicking OK in the alert window navigate to your Landscape tab to confirm that the group was created and it's tile added.<br>
+
+[Click here](https://github.com/witfyl-ravped/urbit-react-cookbook/blob/main/creatinggroups.md) for a detailed walkthrough of the Creating Groups functions and UI
 
 ###### Creating Channels
 
 <li>Back in the React app, fill in the middle "Create Channel" inputs. Select your newly created group from the drop-down and enter a Chat Name and Description and press "Create Channel". This should also be confirmed by a window alert upon success.<br>
 <li>After clicking OK in the alert window navigate to your Landscape page to confirm that the channel was created within your previously created group.<br>
+
+[Click here](https://github.com/witfyl-ravped/urbit-react-cookbook/blob/main/creatingchannels.md) for a detailed walkthrough of the Creating Channels functions and UI
 
 ###### Sending Messages
 
