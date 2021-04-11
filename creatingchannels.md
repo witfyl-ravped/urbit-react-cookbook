@@ -94,37 +94,37 @@ Finally on line 506 we render a form that will look very similar to the one we m
 
 ```
 <form
-                onSubmit={(e: React.SyntheticEvent) => {
-                  e.preventDefault();
-                  const target = e.target as typeof e.target & {
-                    group: { value: string };
-                    chat: { value: string };
-                    description: { value: string };
-                  };
-                  const group = target.group.value;
-                  const chat = target.chat.value;
-                  const description = target.description.value;
-                  createChannelLocal(group, chat, description);
-                }}
-              >
-                {/* Here we leverage our groups state variable to render a dropdown list of available groups to create channels(chats) in */}
-                <select id="group" name="group">
-                  <option>Select a Group</option>
-                  {groups.map((group) => (
-                    <option value={group.name}>{group.name}</option>
-                  ))}
-                </select>
-                <br />
-                <input type="chat" name="chat" placeholder="Chat Name" />
-                <br />
-                <input
-                  type="description"
-                  name="description"
-                  placeholder="Description"
-                />
-                <br />
-                <input type="submit" value="Create Channel" />
-              </form>
+  onSubmit={(e: React.SyntheticEvent) => {
+    e.preventDefault();
+    const target = e.target as typeof e.target & {
+      group: { value: string };
+      chat: { value: string };
+      description: { value: string };
+    };
+    const group = target.group.value;
+    const chat = target.chat.value;
+    const description = target.description.value;
+    createChannelLocal(group, chat, description);
+  }}
+>
+  {/* Here we leverage our groups state variable to render a dropdown list of available groups to create channels(chats) in */}
+  <select id="group" name="group">
+    <option>Select a Group</option>
+    {groups.map((group) => (
+      <option value={group.name}>{group.name}</option>
+    ))}
+  </select>
+  <br />
+  <input type="chat" name="chat" placeholder="Chat Name" />
+  <br />
+  <input
+    type="description"
+    name="description"
+    placeholder="Description"
+  />
+  <br />
+  <input type="submit" value="Create Channel" />
+</form>
 
 ```
 
