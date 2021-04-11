@@ -1,23 +1,10 @@
 # Creating Groups
 
-## Storing Groups in State
+## Parsing User Data
 
-On line 49 we create a state variable that will store an array of Group Names
+Let's start by looking at how we will parse our users' input in order to create a group on our ship, and then we'll look at the UI we use to collect said data.
 
-`const [groups, setGroups] = useState<GroupWName[]>([]);`
-
-Notice that we don't import `GroupWName` this is a custom type interface I made that will allow us to easily access the name of a group and alongside its details.
-
-This is defined on line 119. It consists of a `name` string and a group `Group` which you can see in our imports from `@urbit/api"` at the top of `App.tsx` There are other ways you could store this data but I wanted to include this as a simple example of rolling your own interfaces should you need to.
-
-```
-  interface GroupWName {
-    name: string;
-    group: Group;
-  }
-```
-
-The next part of our app that deals with creating groups is line 188:
+We'll make a brief mention of line 188:
 
 ```
   function formatGroupName(name: string) {
@@ -61,3 +48,39 @@ First we make sure `urb` is set up by running `if(!urb) return`, TypeScript forc
 The first argument we pass uses the kebab formatting function we made above. For simplicities sake I'm leaving the default policy values but of course you can customize those as well. Then we pass in `groupName` and `description`. Again we will be collecting all of this info below.
 
 Finally we add a little pop-up to `confirm` that the group was created, and then a reload function to populate the rest of the UI. If we were using functional components this re-render would happen automatically, or perhaps I'm missing a way to update the `urb` object to cause a re-render. Please let me know if so.
+
+## UI to Collect User Input
+
+Now we're ready to render the UI that will allow users to name their groups and add a description on line 468:
+
+```
+<form
+    onSubmit={(e: React.SyntheticEvent) => {
+        e.preventDefault();
+        const target = e.target as typeof e.target & {
+        groupName: { value: string };
+        description: { value: string };
+    };
+        {/* We're just creating variables from the input fields defined below, createGroupLocal handles the formatting */}
+
+        const groupName = target.groupName.value;
+        const description = target.description.value;
+        createGroupLocal(groupName, description);
+    }}>
+    <input
+        type="groupName"
+        name="groupName"
+        placeholder="Group Name"
+    />
+    <br />
+    <input
+        type="description"
+        name="description"
+        placeholder="Description"
+    />
+    <br />
+    <input type="submit" value="Create Group" />
+    </form>
+```
+
+You'll notice this is the same pattern as we saw in the [Logging In](https://github.com/witfyl-ravped/urbit-react-cookbook/blob/main/logginging.md) lesson. Namely we use the `onSubmit` prop to create an object from our two input fields (in this case group name and description), and then we destructure those values into variables that we pass into our `createGroupLocal()` function described above.
