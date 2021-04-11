@@ -23,25 +23,23 @@ and
 You'll need to add it to the approved list by running:
 
 `|cors-approve ~~http~3a.~2f.~2f.localhost~3a.3000`
-and
+and<br>
 `|cors-approve ~~http~3a.~2f.~2f.localhost~3a.8080`
 
 Verfiy these commands worked by running `+cors-registry` again.
 
-## Using the interface
-
-###### Logging in
+## Logging in
 
 [Click here](https://github.com/witfyl-ravped/urbit-react-cookbook/blob/main/logginging.md) for a detailed walkthrough of the login flow you performed above
 
-###### Creating Groups
+## Creating Groups
 
 Start by adding a group using the form on the left of the React app. Enter a Group Name, Group Description and press "Create Group." Your browser will confirm the successful creation with an alert window.
 After clicking OK in the alert window navigate to your Landscape tab to confirm that the group was created and it's tile added.
 
 [Click here](https://github.com/witfyl-ravped/urbit-react-cookbook/blob/main/creatinggroups.md) for a detailed walkthrough of the Creating Groups functions and UI
 
-###### Creating Channels
+## Creating Channels
 
 Back in the React app, fill in the middle "Create Channel" inputs. Select your newly created group from the drop-down and enter a Chat Name and Description and press "Create Channel". This should also be confirmed by a window alert upon success.
 
@@ -49,7 +47,7 @@ After clicking OK in the alert window navigate to your Landscape page to confirm
 
 [Click here](https://github.com/witfyl-ravped/urbit-react-cookbook/blob/main/creatingchannels.md) for a detailed walkthrough of the Creating Channels functions and UI
 
-###### Sending Messages
+## Sending Messages
 
 Again back in the React app, select a chat from the drop-down menu under "Send Message" and enter some text. Upon clicking the "Send Message" button you should once again receive a confirmation alert.
 
@@ -57,7 +55,7 @@ Your message should now appear at the top of the React app. You can navigate bac
 
 Notice that you can send a message to the channel from Landscape and that it will also appear at the top of the React app.
 
-###### Adding Members
+## Adding Members
 
 In this input select a Group that you have created from the dropdown menu and enter a ship with '~' prefix. Then press "Add Member"
 
@@ -65,7 +63,7 @@ Confirm that the member has been added via Group info in Landscape. You can find
 
 Try adding a few different ships
 
-###### Removing Members
+## Removing Members
 
 First select one of the groups you created from the "Select a Group" drop down in this section
 
@@ -73,7 +71,7 @@ After selecting a group the list of members will auto-populate in the "Select a 
 
 Now click "Remove Member" and then confirm that this user was indeed removed via your Landscape interface
 
-###### Inviting Members
+## Inviting Members
 
 To fully test this function we recommend booting another fake ship on your local network. Follow the instructions in the introduction to this guide for support in creating and booting fake ships. Call this second one `~mus`
 
@@ -89,7 +87,7 @@ After clicking "Ok" in confirmation popup, navigate to the `~mus` Landscape inte
 
 Once inside the group you will have access the channel(chat) you created in the previous step. Notice that you can send a message in the chat from `~mus` and it will display at the top of our React interface
 
-###### Removing Channels
+## Removing Channels
 
 To test this function start by adding a new channel under the Create Channel heading.
 
@@ -99,7 +97,7 @@ Now select your newly added channel from the "Select a Channel" dropdown under t
 
 Confirm the pop and then verify the channel has been removed from both the drop down menus and your Landscape tab.
 
-###### Removing Groups
+## Removing Groups
 
 The reason you created a second channel in the example above is to show that removing a group will also remove its channels.
 
@@ -109,6 +107,6 @@ Click OK and verify that the group and its tile has been removed from Landscape.
 
 Also verify that the channel it contained is no longer listed in either of the "Select a Channel" drop down menus.
 
-###### Removing Channel Metadata
+## Removing Channel Metadata
 
 This is a work in progress. There seems to be a bug in which channel metadata lingers after its parent group is deleted. I've been attempting to clear it and will add this functionality once the issue is resolved
