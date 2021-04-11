@@ -27,9 +27,7 @@ import { invite } from "@urbit/api/dist/groups";
 
 // This is how we establish a connection with out ship. We pass the port that our fake ship is running on along with
 // its code into the Urbit object we imported above. Notice that we then manually assign the name of our ship by declaring 'urb.ship'
-// This gets called when initializing our state in the App function below
-
-// const urb = new Urbit("http://localhost:80", "lidlut-tabwed-pillex-ridrup");
+// This gets called when our user enters their host and code credentials via UI form below
 
 const createApi = (host: string, code: string) =>
   _.memoize(
@@ -45,13 +43,15 @@ const createApi = (host: string, code: string) =>
 // Here we create out app's functional component. We begin by using useState to create state objects for all of the data we're calling out of our ship
 // Also notice that we create a state object for urb that gets set when we call the createApi function
 const App = () => {
-  const [loggedIn, setLoggedIn] = useState<boolean>();
-  const [urb, setUrb] = useState<UrbitInterface | undefined>(); // stores our Urbit connection. Notice we declare the type as UrbitInterface
+  const [loggedIn, setLoggedIn] = useState<boolean>(); // Keeps track of whether our user is logged in for use throughout our app
+  const [urb, setUrb] = useState<UrbitInterface | undefined>(); // Stores our Urbit connection. Notice we declare the type as UrbitInterface
   const [sub, setSub] = useState<number | undefined>(); // Currently managing all subscriptions with one state object. This will most likely change with future api fixes
   const [log, setLog] = useState<string>(""); // State object for the log we keep of incoming messages for display
   const [groups, setGroups] = useState<GroupWName[]>([]); // State object to keep track of the list of groups our ship belongs to
   const [keys, setKeys] = useState<Path[]>([]); // Same as above but for channels(chats). I'm keeping the variable name 'keys' as that is the term used in graph-store
 
+  // We use useEffect to check if the user already has log in credentials stored in localStorage from a previous session. If so then we set our loggedIn
+  // state variable to true
   useEffect(() => {
     if (localStorage.getItem("host") && localStorage.getItem("code")) {
       console.log(localStorage.getItem("host"));
@@ -60,7 +60,8 @@ const App = () => {
     }
   }, [setLoggedIn]);
 
-  // We use useEffect to run our createApi function above to establish and store our connection to our ship. useEffect runs after the initial render in the React lifecycle
+  // If our user has already logged in we run the createApi function with the credentials from localStorage to establish and store
+  // our connection to our ship. useEffect runs after the initial render in the React lifecycle
   useEffect(() => {
     if (loggedIn === false) {
       return;
@@ -74,6 +75,8 @@ const App = () => {
     }
   }, [setUrb]);
 
+  // This is the function that stores the credentials our user enters into localStorage and then uses them to call the createApi function we defined above to
+  // establish connection to our ship
   const login = (host: string, code: string) => {
     localStorage.setItem("host", host);
     localStorage.setItem("code", code);
@@ -111,7 +114,7 @@ const App = () => {
   );
 
   // Callback function that we pass into the graph-store subscription to grab all of our ships keys i.e. chat names
-  const keysArray = useCallback(
+  const handleKeys = useCallback(
     (keys) => {
       let keyArray: Path[] = [];
       keys["graph-update"]["keys"].forEach((key: Resource) => {
@@ -130,7 +133,7 @@ const App = () => {
     group: Group;
   }
 
-  const groupArray = useCallback(
+  const handleGroups = useCallback(
     (groups) => {
       console.log(groups);
       const groupsArray: GroupWName[] = [];
@@ -169,14 +172,14 @@ const App = () => {
       .subscribe({
         app: "group-store",
         path: "/groups",
-        event: groupArray,
+        event: handleGroups,
         err: console.log,
         quit: console.log,
       })
       .then((subscriptionId) => {
         setSub(subscriptionId);
       });
-  }, [urb, sub, groupArray]);
+  }, [urb, sub, handleGroups]);
 
   // Another graph-store subscription pattern this time to pull the list of channels(chats) that our ship belongs to. Again I'm leaving the varialbe
   // names that refer to chats as 'keys' to match the terminology of graph-store
@@ -186,14 +189,14 @@ const App = () => {
       .subscribe({
         app: "graph-store",
         path: "/keys",
-        event: keysArray,
+        event: handleKeys,
         err: console.log,
         quit: console.log,
       })
       .then((subscriptionId) => {
         setSub(subscriptionId);
       });
-  }, [urb, sub, keysArray]);
+  }, [urb, sub, handleKeys]);
 
   // This is a simple kebab formatting function that will most likely be built into @urbit/api in future versions
   function formatGroupName(name: string) {
@@ -411,11 +414,14 @@ const App = () => {
           <tr>
             <td>
               <pre>
+                {/* Very simple UI to render our log from the state variable*/}
                 Latest Message:
                 <br /> {log}
               </pre>
             </td>
             <td>
+              {/* This is the template we'll use for forms that allow users to send data to our ship. We're using minimal code to keep track of the two
+              text inputs for host address and code and then send them to our login() function*/}
               <pre>Login:</pre>
               <form
                 onSubmit={(e: React.SyntheticEvent) => {
@@ -424,14 +430,13 @@ const App = () => {
                     host: { value: string };
                     code: { value: string };
                   };
-                  {
-                    /* We're just creating variables from the input fields defined below, createGroupLocal handles the formatting*/
-                  }
                   const host = target.host.value;
                   const code = target.code.value;
                   login(host, code);
                 }}
               >
+                {/* We are using ternary operators to get if the use already has login info in localStorage. If so we render that info as a placeholder
+                for each input form. Otherwise we use 'Host' or 'Code' as the placeholder*/}
                 <input
                   type="host"
                   name="host"
