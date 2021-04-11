@@ -36,6 +36,8 @@ Verfiy these commands worked by running `+cors-registry` again.
 
 ###### Creating Groups
 
+[Click here](https://github.com/witfyl-ravped/urbit-react-cookbook/blob/main/creatinggroups.md) for a detailed walkthrough of the Creating Groups functions and UI
+
 <li>Start by adding a group using the form on the left of the React app. Enter a Group Name, Group Description and press "Create Group." Your browser will confirm the successful creation with an alert window.<br>
 <li>After clicking OK in the alert window navigate to your Landscape tab to confirm that the group was created and it's tile added.<br>
 
