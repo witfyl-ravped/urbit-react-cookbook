@@ -25,7 +25,9 @@ The `Urbit` object itself accepts a `host` url and a ship `code`. The `host` is 
 
 Refer to the rest of `UrbitInterface` to see other calls we will make in this tutorial, especially `poke` `thread` `scry` and `subscribe`, these are the four ways we will interact with our ship.
 
-## loggedIn Variable
+Take note that after we connect to our `urb` we then have the function return the `urb` object itself.
+
+## Determining Whether a User Has Already Logged in
 
 Refer to the breakout lesson on React Hooks for a more detailed explanation of `useState` and `useEffect`, for the purposes of logging we'll just say that these two hooks allow us to check to see whether a user has previously logged in, and if so, to keep track of their login status with a state variable that is accessible to our entire app.
 
@@ -41,10 +43,98 @@ Then on line 54 we have
   useEffect(() => {
     if (localStorage.getItem("host") && localStorage.getItem("code")) {
       setLoggedIn(true);
+      const _urb = createApi(
+        localStorage.getItem("host")!,
+        localStorage.getItem("code")!
+      );
+      setUrb(_urb);
+      return () => {};
     }
-  }, [setLoggedIn]);
+  }, []);
 ```
 
-The short explanation of useEffect is that it replaces the traditional React lifecycle and allows us to specify actions to perform after the intial render is complete. Here we're checking to see if `host` and `code` exist in `localStorage`. If so then we use our `setLoggedIn` function described above to set the `loggedIn` state variable to `true`.
+The short explanation of useEffect is that it replaces the traditional React lifecycle and allows us to specify actions to perform after the intial render is complete. Here we're checking to see if `host` and `code` exist in `localStorage`. If so then we use our `setLoggedIn` function described above to set the `loggedIn` state variable to `true`. Then we run our `createApi()` function from earlier, passing it the variables from `localStorage`.
 
-The reason we see `[setLoggedIn]` mentioned again at the end of the function is that `useEffect` allows us to give it variables or functions to monitor, and if they change the effect will run again with the new data.
+Remember that `createApi()` returns an `urb` object. When we call it we assign it to the variable `_urb` which will become our connected `urb` once `createApi()` finishes. We then run `setUrb(_urb)` (our `useState` function that stores `urb`) and thus our entire app now has access to our ship object. We get this function from line 46 when we declare the `urb` state variable and tell React that it will be an `UrbitInterface` type.
+
+In the future we'll use this object a lot to call functions such as `urb.poke()` `urb.thread()` etc.
+
+Notice the empty array `[]` at the end of the function. `useEffect` allows us to give it variables or functions to monitor, and if they change the effect will run again with the new data. Since we only want this effect to run after the initial render we just pass an empty array `[]` so it only runs once.
+
+## Login Flow
+
+The previous section covered situations in which a user has already used our app to login. Now let's look at how a new user can log in. The next function we see on line 68 is
+
+```
+  const login = (host: string, code: string) => {
+    localStorage.setItem("host", host);
+    localStorage.setItem("code", code);
+    const _urb = createApi(host, code);
+    setUrb(_urb);
+    setLoggedIn(true);
+    return () => {};
+  };
+```
+
+In a moment we'll see the UI that calls this function. For now note that we take a `host` and `code` string (rember that an `Urbit` object uses these two parameters to log in) and add them to `localStorage`. Then using the same format from the last function we looked at, we call our `createApi()` function, passing it the `host` and `code` credentials and then storing the resulting object in our state as `urb`.
+
+What's different this time is that we also need to set our `loggedIn` state variable to `true`. You should now be familiar with the pattern of using the functions that `useState` gives us to modify state variables. With this, we are logged in, our whole app now has access to our ship to call functions, and our whole app knows that we are logged in. This will come in handy when we look at how we collect the login credentials from our user below.
+
+## Collecting Login Credentials from User
+
+This section starts on line 413. The first `<form>` tag is mostly boiler plate React code for collecting and submitting `<input>` data using TypeScript. We're just a `target` object that has a `host` and `code` key, destructuring each of those keys into its own variable, and then passing them into the `login()` function that we explained above. We will use some variation of this pattern for each of our input fields in this app.
+
+```
+<pre>Login:</pre>
+              <form
+                onSubmit={(e: React.SyntheticEvent) => {
+                  e.preventDefault();
+                  const target = e.target as typeof e.target & {
+                    host: { value: string };
+                    code: { value: string };
+                  };
+                  const host = target.host.value;
+                  const code = target.code.value;
+                  login(host, code);
+                }}
+              >
+```
+
+Now we will use our `loggedIn` state variable to whether we should render UI for a user who has already logged in, or UI asking the user to login. We see this in the `placeholder` prop.
+
+```
+localStorage.getItem("host")
+? localStorage.getItem("host")!
+: "Host"
+```
+
+In the first line, just writing `localStorage.getItem("host")` actually means "if `localStorage.getItem("host")` is not null." The `?` is the equivalent of `then` and here we're having it render `host` from localStorage. As in, if `host` exists then use it as the placeholder. The `!` at the end of this line is to tell typescript that we know `host` will be a string. The `:` here serves as an `else` statement. If we don't already know the user's host then this placeholder serves as a prompt for them to enter it.
+
+Here is the rest of the code snippet. Notice we're doing the same thing for `code`. Again this is a very simple application of conditional rendering, you can use ternary operators to completely customize your UI for a user who is logged in versus one who isn't.
+
+```
+                {/* We are using ternary operators to get if the use already has login info in localStorage. If so we render that info as a placeholder
+                for each input form. Otherwise we render 'Host' or 'Code' as the placeholder*/}
+                <input
+                  type="host"
+                  name="host"
+                  placeholder={
+                    localStorage.getItem("host")
+                      ? localStorage.getItem("host")!
+                      : "Host"
+                  }
+                />
+                <br />
+                <input
+                  type="code"
+                  name="code"
+                  placeholder={
+                    localStorage.getItem("code")
+                      ? localStorage.getItem("code")!
+                      : "Code"
+                  }
+                />
+                <br />
+                <input type="submit" value="Login" />
+              </form>
+```

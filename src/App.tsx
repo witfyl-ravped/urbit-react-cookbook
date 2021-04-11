@@ -49,24 +49,11 @@ const App = () => {
   const [groups, setGroups] = useState<GroupWName[]>([]); // State object to keep track of the list of groups our ship belongs to
   const [keys, setKeys] = useState<Path[]>([]); // Same as above but for channels(chats). I'm keeping the variable name 'keys' as that is the term used in graph-store
 
-  console.log(loggedIn);
-
   // We use useEffect to check if the user already has log in credentials stored in localStorage from a previous session. If so then we set our loggedIn
-  // state variable to true
+  // state variable to true and then run our createApi() function with the credentials from localStorage
   useEffect(() => {
     if (localStorage.getItem("host") && localStorage.getItem("code")) {
-      console.log(localStorage.getItem("host"));
       setLoggedIn(true);
-      console.log(loggedIn);
-    }
-  }, [setLoggedIn]);
-
-  // If our user has already logged in we run the createApi function with the credentials from localStorage to establish and store
-  // our connection to our ship. useEffect runs after the initial render in the React lifecycle
-  useEffect(() => {
-    if (loggedIn !== true) {
-      return;
-    } else {
       const _urb = createApi(
         localStorage.getItem("host")!,
         localStorage.getItem("code")!
@@ -74,7 +61,7 @@ const App = () => {
       setUrb(_urb);
       return () => {};
     }
-  }, [setUrb]);
+  }, []);
 
   // This is the function that stores the credentials our user enters into localStorage and then uses them to call the createApi function we defined above to
   // establish connection to our ship
