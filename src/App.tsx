@@ -10,7 +10,6 @@ import {
   addPost,
   createManagedGraph,
   dateToDa,
-  removeGroup,
   deleteGroup,
   resourceFromPath,
   deleteGraph,
