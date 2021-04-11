@@ -21,7 +21,7 @@ This is defined on line 119. It consists of a `name` string and a group `Group` 
 
 ## Subscribing to Groups
 
-Skipping down to line 157 we see:
+Skipping down to line 156 we see:
 
 ```
   useEffect(() => {
@@ -48,7 +48,7 @@ The `subscribe` parameters are pretty straightforward. We're creating a subscrip
 
 Finally we pass in an array as a second argument that will re-subscribe if any of it's contents change.
 
-Now let's jump back up to line 124 where we define the `handleGroups` callback function:
+Now let's jump back up to line 125 where we define the `handleGroups` callback function:
 
 ```
   const handleGroups = useCallback(
@@ -66,3 +66,66 @@ Now let's jump back up to line 124 where we define the `handleGroups` callback f
 Here we use the `useCallback` hook, structured very similarly to `useEffect`. We start by assigning `groups`to the data we get back from `subscribe`. Then we make an array of our customer interface `GroupWName`. We use the custom interface because the `groups` object returned by `subscribe` uses the group name as the key for the rest of the group data. So we push a custom object into `groupsArray` that extracts the group name and pairs it with the rest of the `group` object info. We'll see later that we now have easy access to all of each group's data.
 
 We then set our state `groups` variable equal to our new array and then use the second argument of `useCallback` to re-render if `groups` changes.
+
+Now let's move down to line 242. Just like we did for groups in the last lesson, here will create a `createChannelLocal()` function to format the data we collect from our user and send it to our ship as via `urb.thread()`
+
+```
+  // Similar to createGroupLocal in last lesson, we use urb.thread() to create a channel via graph-store.
+  function createChannelLocal(
+    group: string,
+    chat: string,
+    description: string
+  ) {
+    if (!urb || !urb.ship) return;
+    // Similar to stringToSymbol this is also a bit of formatting that will likely become a part of @urbit/api in the future. It is used to append
+    // the random numbers the end of a channel names
+    const resId: string =
+      stringToSymbol(chat) + `-${Math.floor(Math.random() * 10000)}`;
+    urb.thread(
+      // Notice again we pass a formatting function into urb.thread this time it is createManagedGraph
+      createManagedGraph(urb.ship, resId, chat, description, group, "chat")
+    );
+    window.confirm(`Created chat ${chat}`);
+    window.location.reload();
+  }
+```
+
+Finally on line 506 we render a form that will look very similar to the one we made to create groups in the last lesson.
+
+```
+<form
+                onSubmit={(e: React.SyntheticEvent) => {
+                  e.preventDefault();
+                  const target = e.target as typeof e.target & {
+                    group: { value: string };
+                    chat: { value: string };
+                    description: { value: string };
+                  };
+                  const group = target.group.value;
+                  const chat = target.chat.value;
+                  const description = target.description.value;
+                  createChannelLocal(group, chat, description);
+                }}
+              >
+                {/* Here we leverage our groups state variable to render a dropdown list of available groups to create channels(chats) in */}
+                <select id="group" name="group">
+                  <option>Select a Group</option>
+                  {groups.map((group) => (
+                    <option value={group.name}>{group.name}</option>
+                  ))}
+                </select>
+                <br />
+                <input type="chat" name="chat" placeholder="Chat Name" />
+                <br />
+                <input
+                  type="description"
+                  name="description"
+                  placeholder="Description"
+                />
+                <br />
+                <input type="submit" value="Create Channel" />
+              </form>
+
+```
+
+The only new pattern here, which we will use later as well, is on line 521. We map over the `groups` variable in our state to allow our users to select the group in which they want to create a new channel. Refer back to the `createManagedGraph()` call that we made in the previous function. Now you can see how `createChannelLocal()` takes in the arguments from the UI above and formats them into a `thread` to send into our ship.

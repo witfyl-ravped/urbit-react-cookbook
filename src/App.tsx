@@ -16,6 +16,7 @@ import {
   Resource,
   resourceAsPath,
   Path,
+  Scry,
   remove,
   deSig,
   addMembers,
@@ -80,11 +81,11 @@ const App = () => {
       if (!("add-nodes" in message["graph-update"])) return;
       const newNodes: Record<string, GraphNode> =
         message["graph-update"]["add-nodes"]["nodes"];
-      console.log(newNodes);
+      // console.log(newNodes);
       let newMessage = "";
       Object.keys(newNodes).forEach((index) => {
         newNodes[index].post.contents.forEach((content: Content) => {
-          console.log(content);
+          // console.log(content);
           if ("text" in content) {
             newMessage += content.text + " ";
           } else if ("url" in content) {
@@ -323,13 +324,6 @@ const App = () => {
     window.location.reload();
   }
 
-  // There seems to be a bug that keeps channel names in a ships metadata if its parent group is deleted. This was my attempt to remove them, we haven't figured this one out yet
-  function removeChannelMetadata(channel: Path, group: string) {
-    if (!urb) return;
-    urb.poke(remove("chat", channel, group));
-    console.log(channel, group);
-  }
-
   // We're using a functional component here to render the UI because removing members from groups requires a little extra logic
   // We want the user to select between groups to render a list of each groups members. We need the extra steps since the member list is derived from the group Path
   // This is different from our other functions since our user is creating an action based on pre-populated lists rather than their own text input
@@ -391,6 +385,18 @@ const App = () => {
 
     window.confirm(`Invited ${ship} to ${group}`);
     window.location.reload();
+  }
+
+  async function scryLocal(key: Path, count: string) {
+    if (!urb) return;
+
+    const keyResource = resourceFromPath(key);
+    const scry: Scry = {
+      app: "graph-store",
+      path: `/newest/${keyResource.ship}/${keyResource.name}/${count}`,
+    };
+
+    const messages = await urb.scry(scry);
   }
 
   return (
@@ -660,7 +666,7 @@ const App = () => {
             </td>
             <td>
               <div style={{ justifyContent: "center" }}>
-                <pre>Remove Channel Metadata</pre>
+                <pre>Scry Example</pre>
               </div>
             </td>
           </tr>
@@ -714,9 +720,11 @@ const App = () => {
                   e.preventDefault();
                   const target = e.target as typeof e.target & {
                     chat: { value: Path };
+                    count: { value: string };
                   };
                   const chat = target.chat.value;
-                  removeChannelMetadata(chat, "/ship/~zod/metadata");
+                  const count = target.count.value;
+                  scryLocal(chat, count);
                 }}
               >
                 <select id="chat" name="chat">
@@ -726,7 +734,9 @@ const App = () => {
                   ))}
                 </select>
                 <br />
-                <input type="submit" value="Remove Channel" />
+                <input type="count" name="count" placeholder="Count" />
+                <br />
+                <input type="submit" value="Scry Messages" />
               </form>
             </td>
           </tr>
