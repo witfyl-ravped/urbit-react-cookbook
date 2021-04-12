@@ -75,6 +75,8 @@ After selecting a group the list of members will auto-populate in the "Select a 
 
 Now click "Remove Member" and then confirm that this user was indeed removed via your Landscape interface
 
+[Click here](https://github.com/witfyl-ravped/urbit-react-cookbook/blob/main/removingmembers.md) for a detailed walkthrough of the Removing Members functions and UI
+
 ## Inviting Members
 
 To fully test this function we recommend booting another fake ship on your local network. Follow the instructions in the introduction to this guide for support in creating and booting fake ships. Call this second one `~mus`
