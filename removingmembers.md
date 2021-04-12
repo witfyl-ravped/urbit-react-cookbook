@@ -1,4 +1,4 @@
-# Adding Members
+# Removing Members
 
 ## Local Function
 
@@ -31,6 +31,7 @@ Starting on line 329 we see:
 // We're using a functional component here to render the UI because removing members from groups requires a little extra logic
 // We want the user to select between groups to render a list of each groups members. We need the extra steps since the member list is derived from the group Path
 // This is different from our other functions since our user is creating an action based on pre-populated lists rather than their own text input
+
   const RenderRemoveMembers = () => {
     // Making this a functional component gives us access to the useState hook for free. We'll use this to populate lists of members from user input
     const [selectedGroup, setSelectedGroup] = useState("default");
@@ -90,3 +91,5 @@ Two things are different from the UI we've seen so far. First notice that in the
 Let's look at the second `<select>` tag. Here we are rendering a second dropdown menu. Notice that we give it a "Select a Member" placeholder option and then use a ternary operation. We use `groups[0]` to confirm that the `groups` array is loaded before we continue. Also that `selectedGroup !== "default"`. Notice that in our state variable we set the default value of the `group` variable to "default" in `useState()`. This let's us check to make sure that the user has made a selection from the `groups` dropdown thus giving us an `index` that we can use to fetch the `members` out of.
 
 This is why we're storing `index` in state, now we can render the rest of our `<options>` by mapping over the `member` array which is stored in `groups[index]`. This is what `groups[parseInt(selectedGroup)].group.members.map((member)` gives us.
+
+Last thing to note here is that on line 626 where we want to render this form we just have to write `<RenderRemoveMembers />` and React takes care of the rest.

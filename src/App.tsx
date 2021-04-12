@@ -371,7 +371,7 @@ const App = () => {
     );
   };
 
-  // Since React function to populate the @urbit/api invite() function which we send to your ship via thread
+  // Local function to populate the @urbit/api invite() function which we send to our ship via thread
   function inviteLocal(group: string, ship: string, description: string) {
     if (!urb) return;
 

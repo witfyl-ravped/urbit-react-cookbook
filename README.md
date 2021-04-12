@@ -93,6 +93,8 @@ After clicking "Ok" in confirmation popup, navigate to the `~mus` Landscape inte
 
 Once inside the group you will have access the channel(chat) you created in the previous step. Notice that you can send a message in the chat from `~mus` and it will display at the top of our React interface
 
+[Click here](https://github.com/witfyl-ravped/urbit-react-cookbook/blob/main/invitingmembers.md) for a detailed walkthrough of the Inviting Members functions and UI
+
 ## Removing Channels
 
 To test this function start by adding a new channel under the Create Channel heading.
@@ -102,6 +104,8 @@ Verify that it has been added by checking in Landscape. You can also test it by 
 Now select your newly added channel from the "Select a Channel" dropdown under the "Remove Channel" header.
 
 Confirm the pop and then verify the channel has been removed from both the drop down menus and your Landscape tab.
+
+[Click here](https://github.com/witfyl-ravped/urbit-react-cookbook/blob/main/removingchannels.md) for a detailed walkthrough of the Inviting Members functions and UI
 
 ## Removing Groups
 
