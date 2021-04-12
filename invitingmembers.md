@@ -31,20 +31,20 @@ Nothing new here, just a dropdown menu to select the `group`, input field to ent
     onSubmit={(e: React.SyntheticEvent) => {
         e.preventDefault();
         const target = e.target as typeof e.target & {
-        group: { value: string };
-        ship: { value: string };
-        description: { value: string };
+            group: { value: string };
+            ship: { value: string };
+            description: { value: string };
         };
+
         const group = target.group.value;
         const ship = target.ship.value;
         const description = target.description.value;
         inviteLocal(group, ship, description);
-    }}
-    >
+    }}>
     <select id="group" name="group">
         <option>Select a Group</option>
         {groups.map((group) => (
-        <option value={group.name}>{group.name}</option>
+            <option value={group.name}>{group.name}</option>
         ))}
     </select>
     <br />
@@ -57,5 +57,5 @@ Nothing new here, just a dropdown menu to select the `group`, input field to ent
     />
     <br />
     <input type="submit" value="Send Invite" />
-    </form>
+</form>
 ```

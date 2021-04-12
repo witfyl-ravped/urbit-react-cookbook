@@ -299,7 +299,7 @@ const App = () => {
     window.location.reload();
   }
 
-  // React function to remove a group from our ship
+  // Local function to remove a group from our ship
   function removeGroupLocal(group: string) {
     if (!urb) return;
     const groupResource = resourceFromPath(group);
@@ -663,12 +663,12 @@ const App = () => {
           <tr>
             <td>
               <div style={{ justifyContent: "center" }}>
-                <pre>Remove Group</pre>
+                <pre>Remove Channel</pre>
               </div>
             </td>
             <td>
               <div style={{ justifyContent: "center" }}>
-                <pre>Remove Channel</pre>
+                <pre>Remove Group</pre>
               </div>
             </td>
             <td>
@@ -678,28 +678,6 @@ const App = () => {
             </td>
           </tr>
           <tr>
-            <td>
-              {/* The forms below are the same format we're used to seeing when handling user text input for our formatting functins above */}
-              <form
-                onSubmit={(e: React.SyntheticEvent) => {
-                  e.preventDefault();
-                  const target = e.target as typeof e.target & {
-                    group: { value: string };
-                  };
-                  const group = target.group.value;
-                  removeGroupLocal(group);
-                }}
-              >
-                <select id="group" name="group">
-                  <option>Select a Group</option>
-                  {groups.map((group) => (
-                    <option value={group.name}>{group.name}</option>
-                  ))}
-                </select>
-                <br />
-                <input type="submit" value="Remove Group" />
-              </form>
-            </td>
             <td>
               <form
                 onSubmit={(e: React.SyntheticEvent) => {
@@ -719,6 +697,27 @@ const App = () => {
                 </select>
                 <br />
                 <input type="submit" value="Remove Channel" />
+              </form>
+            </td>
+            <td>
+              <form
+                onSubmit={(e: React.SyntheticEvent) => {
+                  e.preventDefault();
+                  const target = e.target as typeof e.target & {
+                    group: { value: string };
+                  };
+                  const group = target.group.value;
+                  removeGroupLocal(group);
+                }}
+              >
+                <select id="group" name="group">
+                  <option>Select a Group</option>
+                  {groups.map((group) => (
+                    <option value={group.name}>{group.name}</option>
+                  ))}
+                </select>
+                <br />
+                <input type="submit" value="Remove Group" />
               </form>
             </td>
             <td>

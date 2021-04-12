@@ -117,6 +117,8 @@ Click OK and verify that the group and its tile has been removed from Landscape.
 
 Also verify that the channel it contained is no longer listed in either of the "Select a Channel" drop down menus.
 
+[Click here](https://github.com/witfyl-ravped/urbit-react-cookbook/blob/main/removinggroups.md) for a detailed walkthrough of the Inviting Members functions and UI
+
 ## Scrying Messages
 
 To test this out go ahead and send a few messages to one of the channels you created. Bonus points if you send a few more from another ship that you added or invited
@@ -126,3 +128,5 @@ Now select this channel from the dropdown under "Scrying Messages"
 In the "Count" input enter a number of messages to scry out of `graph-store`
 
 Finally press "Scry Messages" and check the results in the console
+
+[Click here](https://github.com/witfyl-ravped/urbit-react-cookbook/blob/main/scryingmessages.md) for a detailed walkthrough of the Scrying Messages functions and UI
