@@ -123,7 +123,7 @@ Also verify that the channel it contained is no longer listed in either of the "
 
 ## Scrying Messages
 
-To test this out go ahead and send a few messages to one of the channels you created. Bonus points if you send a few more from another ship that you added or invited
+This function allows you to `scry` a variable number of recent texts from a given channel. To test this out go ahead and send a few messages to one of the channels you created. Bonus points if you send a few more from another ship that you added or invited
 
 Now select this channel from the dropdown under "Scrying Messages"
 
