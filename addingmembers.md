@@ -23,6 +23,8 @@ This is a simple example since we don't need any information from our ship in or
 
 We're making an array since the `addMembers()` function is a capable of adding multiple ships at a time and only accepts an array of ships. See for yourself at `@urbit/api/dist/groupStoreAction.lib.d.ts`. So we push our ship into this array and send it along with the `group` into `addMembers()`. Like in previous examples our users are selecting the group from a drop down menu, and for that we need the `group` to be a string i.e. `Path`. That means that we will once again need `resourceFromPath()` since `addMembers()` accepts the group data as a `Resource`.
 
+## UI
+
 After that we just need the UI to collect data from our user which we see on line 595:
 
 ```

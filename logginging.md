@@ -80,24 +80,24 @@ In a moment we'll see the UI that calls this function. For now note that we take
 
 What's different this time is that we also need to set our `loggedIn` state variable to `true`. You should now be familiar with the pattern of using the functions that `useState` gives us to modify state variables. With this, we are logged in, our whole app now has access to our ship to call functions, and our whole app knows that we are logged in. This will come in handy when we look at how we collect the login credentials from our user below.
 
-## Collecting Login Credentials from User
+## UI
 
 This section starts on line 413. The first `<form>` tag is mostly boiler plate React code for collecting and submitting `<input>` data using TypeScript. We're just a `target` object that has a `host` and `code` key, destructuring each of those keys into its own variable, and then passing them into the `login()` function that we explained above. We will use some variation of this pattern for each of our input fields in this app.
 
 ```
 <pre>Login:</pre>
-              <form
-                onSubmit={(e: React.SyntheticEvent) => {
-                  e.preventDefault();
-                  const target = e.target as typeof e.target & {
-                    host: { value: string };
-                    code: { value: string };
-                  };
-                  const host = target.host.value;
-                  const code = target.code.value;
-                  login(host, code);
-                }}
-              >
+  <form
+    onSubmit={(e: React.SyntheticEvent) => {
+      e.preventDefault();
+      const target = e.target as typeof e.target & {
+        host: { value: string };
+        code: { value: string };
+      };
+      const host = target.host.value;
+      const code = target.code.value;
+      login(host, code);
+    }}
+  >
 ```
 
 Now we will use our `loggedIn` state variable to whether we should render UI for a user who has already logged in, or UI asking the user to login. We see this in the `placeholder` prop.
@@ -113,24 +113,24 @@ The `:` here serves as an `else` statement. If we don't already know the user's 
 Here is the rest of the code snippet. Notice we're doing the same thing for `code`. Again this is a very simple application of conditional rendering, you can use ternary operators to completely customize your UI for a user who is logged in versus one who isn't.
 
 ```
-                {/* We are using ternary operators to get if the use already has login info in localStorage. If so we render that info as a placeholder
-                for each input form. Otherwise we render 'Host' or 'Code' as the placeholder*/}
-                <input
-                  type="host"
-                  name="host"
-                  placeholder={
-                    loggedIn ? localStorage.getItem("host")! : "Host"
-                  }
-                />
-                <br />
-                <input
-                  type="code"
-                  name="code"
-                  placeholder={
-                    loggedIn ? localStorage.getItem("code")! : "Code"
-                  }
-                />
-                <br />
-                <input type="submit" value="Login" />
-              </form>
+  {/* We are using ternary operators to get if the use already has login info in localStorage. If so we render that info as a placeholder
+  for each input form. Otherwise we render 'Host' or 'Code' as the placeholder*/}
+  <input
+    type="host"
+    name="host"
+    placeholder={
+      loggedIn ? localStorage.getItem("host")! : "Host"
+    }
+  />
+  <br />
+  <input
+    type="code"
+    name="code"
+    placeholder={
+      loggedIn ? localStorage.getItem("code")! : "Code"
+    }
+  />
+  <br />
+  <input type="submit" value="Login" />
+</form>
 ```

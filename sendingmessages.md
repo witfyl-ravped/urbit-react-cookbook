@@ -12,6 +12,8 @@ We're using two state variables as we want to keep track of two things while we 
 
 It's worth noting that we are storing the list of `keys` as an array of `Path`s. A `Path` is a string, for example `/ship/~zod/chat-name-777` and below we'll see how we can parse a `Path` to retrieve the information we need to send a message to the channel it represents.
 
+## Setting up Subscriptions
+
 Let's skip down to line 136 to see subscription we make to retrieve messages sent in our ship. It has a callback function that we will look at next:
 
 ```
@@ -115,6 +117,8 @@ It's much simpler than `logHandler` since we are just pushing `keys` into an arr
 
 Finally we use `setKeys` to store our array of `keys` in our state variable.
 
+## Local Function
+
 Now let's look at how we format user input (collected in the UI described below) to send a message from our ship:
 
 ```
@@ -138,6 +142,8 @@ We take a `message` and `key` as an argument, but then we need to do some extra 
 Remember that we wanted our key typed as a `string` to include as an item in a drop down menu, so now we coerce it back into a `Resource` by importing and using the `resourceFromPath()` function.
 
 We then create a `thread` and need one more formatting function, this time `addPost`. If you look at the source of this function you can see that we will need to add a `~` to our ship name which we do manually. Now that our `Path` is a `Resource` again we can derive our `channel` name by using `keyResource.name`, and finally we pass in our newly created `post` variable.
+
+## UI
 
 Finally on line 542 we can look at the UI we render in order to collect this data from our user:
 

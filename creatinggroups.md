@@ -1,6 +1,6 @@
 # Creating Groups
 
-## Parsing User Data
+## Local Function
 
 Let's start by looking at how we will parse our users' input in order to create a group on our ship, and then we'll look at the UI we use to collect said data.
 
@@ -49,7 +49,7 @@ The first argument we pass uses the kebab formatting function we made above. For
 
 Finally we add a little pop-up to `confirm` that the group was created, and then a reload function to populate the rest of the UI. If we were using functional components this re-render would happen automatically, or perhaps I'm missing a way to update the `urb` object to cause a re-render. Please let me know if so.
 
-## UI to Collect User Input
+## UI
 
 Now we're ready to render the UI that will allow users to name their groups and add a description on line 468:
 

@@ -2,7 +2,7 @@
 
 Interestingly enough, before we start talking about creating channels we actually have to cover subscribing and storing groups. This is because a channel has to live inside of a group and in order for our users to specify which group they want their channels to live in, they need to know what groups exist in our ship.
 
-## Storing Groups in State
+## Setting up State Variables
 
 On line 49 we create a state variable that will store an array of Group Names
 
@@ -19,7 +19,7 @@ This is defined on line 119. It consists of a `name` string and a group `Group` 
   }
 ```
 
-## Subscribing to Groups
+## Setting up Subscriptions
 
 Skipping down to line 156 we see:
 
@@ -67,6 +67,8 @@ Here we use the `useCallback` hook, structured very similarly to `useEffect`. We
 
 We then set our state `groups` variable equal to our new array and then use the second argument of `useCallback` to re-render if `groups` changes.
 
+## Local Function
+
 Now let's move down to line 242. Just like we did for groups in the last lesson, here will create a `createChannelLocal()` function to format the data we collect from our user and send it to our ship as via `urb.thread()`
 
 ```
@@ -89,6 +91,8 @@ Now let's move down to line 242. Just like we did for groups in the last lesson,
     window.location.reload();
   }
 ```
+
+## UI
 
 Finally on line 506 we render a form that will look very similar to the one we made to create groups in the last lesson.
 
