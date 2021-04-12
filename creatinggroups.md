@@ -43,7 +43,7 @@ Line 197 we make a function to create a group from the user input which we will 
 }
 ```
 
-First we make sure `urb` is set up by running `if(!urb) return`, TypeScript forces us to check this as well otherwise it returns an error that `urb` might be null. Similar to `.subscribe` above, we now call `.thread` directly on our `urb` object. But here we need to add an additional formatting function `createGroup` which we import from `@urbit/api`.
+First we make sure `urb` is set up by running `if(!urb) return`, TypeScript forces us to check this as well otherwise it returns an error that `urb` might be null. We call `.thread` directly on our `urb` object, we need to add an additional formatting function `createGroup` which we import from `@urbit/api`. It is exported from `@urbit/api/dist/groups/lib.d.ts` check it out there to see which parameters it accepts.
 
 The first argument we pass uses the kebab formatting function we made above. For simplicities sake I'm leaving the default policy values but of course you can customize those as well. Then we pass in `groupName` and `description`. Again we will be collecting all of this info below.
 

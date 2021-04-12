@@ -81,11 +81,9 @@ const App = () => {
       if (!("add-nodes" in message["graph-update"])) return;
       const newNodes: Record<string, GraphNode> =
         message["graph-update"]["add-nodes"]["nodes"];
-      // console.log(newNodes);
       let newMessage = "";
       Object.keys(newNodes).forEach((index) => {
         newNodes[index].post.contents.forEach((content: Content) => {
-          // console.log(content);
           if ("text" in content) {
             newMessage += content.text + " ";
           } else if ("url" in content) {
@@ -259,7 +257,7 @@ const App = () => {
   }
 
   // Our function to send messages to a channel(chat) by the user in our React UI
-  function sendMessage(message: string, key: Path) {
+  function sendMessageLocal(message: string, key: Path) {
     if (!urb || !urb.ship) return;
 
     // Notice that this requires an extra formatting functions. First we use createPost to format the message from the browser
@@ -550,7 +548,7 @@ const App = () => {
                   };
                   const message = target.message.value;
                   const chat = target.chat.value;
-                  sendMessage(message, chat);
+                  sendMessageLocal(message, chat);
                 }}
               >
                 <select id="chat" name="chat">
