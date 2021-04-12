@@ -275,7 +275,7 @@ const App = () => {
   function addMembersLocal(group: Path, ship: string) {
     if (!urb) return;
 
-    // Since addMembers() accepts a multiple ships, we'll have to create an array out of our ship even though we are only sending in one ship at a time in our example
+    // Since addMembers() accepts multiple ships, we'll have to create an array out of our ship even though we are only sending in one at a time in our example
     const shipArray: string[] = [];
     shipArray.push(ship);
     // We also need to coerce our group Path into a Resource to accommodate addMembers() data types

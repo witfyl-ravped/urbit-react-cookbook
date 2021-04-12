@@ -65,6 +65,8 @@ Confirm that the member has been added via Group info in Landscape. You can find
 
 Try adding a few different ships
 
+[Click here](https://github.com/witfyl-ravped/urbit-react-cookbook/blob/main/addingmembers.md) for a detailed walkthrough of the Adding Members functions and UI
+
 ## Removing Members
 
 First select one of the groups you created from the "Select a Group" drop down in this section
