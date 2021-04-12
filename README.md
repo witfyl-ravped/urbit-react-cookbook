@@ -55,6 +55,8 @@ Your message should now appear at the top of the React app. You can navigate bac
 
 Notice that you can send a message to the channel from Landscape and that it will also appear at the top of the React app.
 
+[Click here](https://github.com/witfyl-ravped/urbit-react-cookbook/blob/main/sendingmessages.md) for a detailed walkthrough of the Sending Messages functions and UI
+
 ## Adding Members
 
 In this input select a Group that you have created from the dropdown menu and enter a ship with '~' prefix. Then press "Add Member"
