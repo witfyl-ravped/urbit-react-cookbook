@@ -83,6 +83,7 @@ const App = () => {
         message["graph-update"]["add-nodes"]["nodes"];
       let newMessage = "";
       Object.keys(newNodes).forEach((index) => {
+        console.log(newNodes[index]);
         newNodes[index].post.contents.forEach((content: Content) => {
           if ("text" in content) {
             newMessage += content.text + " ";
@@ -394,7 +395,15 @@ const App = () => {
       path: `/newest/${keyResource.ship}/${keyResource.name}/${count}`,
     };
 
-    const messages = await urb.scry(scry);
+    await urb.scry(scry).then((messages) => {
+      const nodes = messages["graph-update"]["add-nodes"]["nodes"];
+      Object.keys(nodes).forEach((index) => {
+        console.log(
+          `${nodes[index].post.author}:`,
+          nodes[index].post.contents[0].text
+        );
+      });
+    });
   }
 
   return (
