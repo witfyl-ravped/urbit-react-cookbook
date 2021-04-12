@@ -1,5 +1,7 @@
 # Urbit React Cookbook
 
+In this lesson you will learn how to build a React frontend that connects to your ship and interacts with it using the four basic forms of communication, namely: `poke`, `subscribe`, `thread`, `scry`. These examples will get you started building React apps for Urbit as well as familiarize you with the Urbit APIs required to get you writing your own custom functions.
+
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
 ## Getting Started
