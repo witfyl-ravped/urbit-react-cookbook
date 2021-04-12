@@ -386,7 +386,7 @@ const App = () => {
     window.location.reload();
   }
 
-  async function scryLocal(key: Path, count: string) {
+  function scryLocal(key: Path, count: string) {
     if (!urb) return;
 
     const keyResource = resourceFromPath(key);
@@ -395,7 +395,7 @@ const App = () => {
       path: `/newest/${keyResource.ship}/${keyResource.name}/${count}`,
     };
 
-    await urb.scry(scry).then((messages) => {
+    urb.scry(scry).then((messages) => {
       const nodes = messages["graph-update"]["add-nodes"]["nodes"];
       Object.keys(nodes).forEach((index) => {
         console.log(
@@ -673,7 +673,7 @@ const App = () => {
             </td>
             <td>
               <div style={{ justifyContent: "center" }}>
-                <pre>Scry Example</pre>
+                <pre>Scrying Messages</pre>
               </div>
             </td>
           </tr>

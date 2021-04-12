@@ -111,4 +111,10 @@ Also verify that the channel it contained is no longer listed in either of the "
 
 ## Scrying Messages
 
-Scry x numbers of messages from a chat
+To test this out go ahead and send a few messages to one of the channels you created. Bonus points if you send a few more from another ship that you added or invited
+
+Now select this channel from the dropdown under "Scrying Messages"
+
+In the "Count" input enter a number of messages to scry out of `graph-store`
+
+Finally press "Scry Messages" and check the results in the console
