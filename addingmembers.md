@@ -2,10 +2,10 @@
 
 ## Local Function
 
-This is a simple example since we don't need any information from our ship in order to add members to a group. Everything is contained in this function on line 275:
+This is a simple example since we don't need any information from our ship in order to add members to a group. We just need to format ship names and send them as a `poke`. We do this with the function on line 275:
 
 ```
-  // This is our React function to add members to a group
+  // This is our local function to add members to a group
   function addMembersLocal(group: Path, ship: string) {
     if (!urb) return;
 
@@ -21,11 +21,11 @@ This is a simple example since we don't need any information from our ship in or
   }
 ```
 
-We're making an array since the `addMembers()` function is a capable of adding multiple ships at a time and only accepts an array of ships. See for yourself at `@urbit/api/dist/groupStoreAction.lib.d.ts`. So we push our ship into this array and send it along with the `group` into `addMembers()`. Like in previous examples our users are selecting the group from a drop down menu, and for that we need the `group` to be a string i.e. `Path`. That means that we will once again need `resourceFromPath()` since `addMembers()` accepts the group data as a `Resource`.
+Notice that we're creating an array since the `addMembers()` function is capable of adding multiple `ship`s at a time and so its input requires an array. See for yourself at `@urbit/api/dist/groupStoreAction.lib.d.ts`. So we push our single `ship` into this array and send it into `addMembers()` along with the name of the `group` we're adding members to. Like in previous examples our users are selecting the `group` from a dropdown menu, and for that we need the `group` to be a string i.e. `Path`. This means that we will once again need `resourceFromPath()` to change it back into a `Resource` since that is the data type `addMembers()` expects.
 
 ## UI
 
-After that we just need the UI to collect data from our user which we see on line 595:
+Now we just need the UI to collect data from our user which we see on line 595:
 
 ```
     <form

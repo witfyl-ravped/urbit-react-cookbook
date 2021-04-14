@@ -271,7 +271,7 @@ const App = () => {
     alert("Message sent");
   }
 
-  // This is our React function to add members to a group
+  // This is our local function to add members to a group
   function addMembersLocal(group: Path, ship: string) {
     if (!urb) return;
 
@@ -286,7 +286,7 @@ const App = () => {
     window.location.reload();
   }
 
-  // Our React function to remove members from a group. Requires the same formatting steps as addMembersLocal()
+  // Our local function to remove members from a group. Requires the same formatting steps as addMembersLocal()
   function removeMembersLocal(group: Path, ship: string) {
     if (!urb) return;
 
@@ -310,7 +310,7 @@ const App = () => {
     window.location.reload();
   }
 
-  // React function to remove a channel(chat) from a group on our ship
+  // Local function to remove a channel(chat) from a group on our ship
   function removeChannelLocal(channel: Path) {
     if (!urb) return;
     const channelResource = resourceFromPath(channel);
@@ -324,10 +324,10 @@ const App = () => {
   }
 
   // We're using a functional component here to render the UI because removing members from groups requires a little extra logic
-  // We want the user to select between groups to render a list of each groups members. We need the extra steps since the member list is derived from the group Path
-  // This is different from our other functions since our user is creating an action based on pre-populated lists rather than their own text input
+  // We want the user to select between groups to render a list of each group's members. We need the extra steps since the member list is derived from the group Paths
+  // which a user can toggle between. Therefore lists will have to be rendered according to user input
   const RenderRemoveMembers = () => {
-    // Making this a functional component gives us access to the useState hook for free. We'll use this to populate lists of members from user input
+    // Making this a functional component gives us access to its own useState hook for free. We'll use this to populate lists of members from user input
     const [selectedGroup, setSelectedGroup] = useState("default");
     return (
       <form
@@ -545,7 +545,7 @@ const App = () => {
             </td>
             <td>
               {/* Here we do the same as the channel input but for messages. This looks the same
-              as chat creation since all of the formatting is done in our functions above.
+              as chat creation since all of the formatting is done in our local functions above.
               We just need to present the user with a list of channels(chats) to choose and then an input field
               for their message */}
               <form

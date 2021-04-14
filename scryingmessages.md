@@ -2,7 +2,7 @@
 
 ## Local Function
 
-Finally we introduce a new concept to see a fourth way we can interact with our ship from React, namely `scry`ing. These are useful to make calls for specific pieces of information for which you don't want to setup a `subscription`. A `Scry` take an `app` and a `path` and returns the data as a `Promise` similar to a `subscription`. But unlike a `subscription` we don't receive any more data from our request so we don't need to manage it.
+Finally we introduce a new concept to see a fourth way we can interact with our ship from React, namely `scry`ing. These are useful to make calls for specific pieces of information for which you don't want to setup a `subscription`. A `Scry` takes an `app` and a `path` and returns the data as a `Promise` similar to a `subscription`. But unlike a `subscription` we don't receive any subsequent data from our `scry` so we don't need to manage it.
 
 Beginning on line 389:
 
@@ -28,9 +28,9 @@ Beginning on line 389:
   }
 ```
 
-First we format our `Scry` but giving it the app `graph-store` and destructuring our `keyResource` to give it the `path` given to us by our user in the UI below. Our user also gives us the number of previous messages to return via the `count` argument which we add to the end of our `path`.
+First we format our `Scry` by giving it the app `graph-store` and destructuring our `keyResource` to give it the `path` given to us by our user in the UI below. Our user also gives us the number of previous messages to return via the `count` argument which we add to the end of our `path`.
 
-Then we call `urb.scry()` passing it the `scry` variable we just made and append a `.then()` function to create a `Promise` to handle the returned data. Notice that we're parsing this very similarly to the `logHandler` callback we used on our `subscription` earlier in this lesson. In this example we are just `console.log`ing the authoring `ship` and text from each message, but of course you can do whatever you'd like from within the `Promise`.
+Then we call `urb.scry()` passing it the `scry` variable we just made and append `.then()` to create a `Promise` to handle the returned data. Notice that we're parsing this very similarly to the `logHandler` callback we used on our `subscription` earlier in our app. In this example we are just `console.log`ing the authoring `ship` and text from each message, but of course you can do whatever you'd like from within the `Promise`.
 
 ## UI
 

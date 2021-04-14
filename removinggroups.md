@@ -2,7 +2,7 @@
 
 ## Local Function
 
-Similar to `removeChannelLocal()` we only need a very simple function to remove a `group` from our `ship` and we see it on line 303:
+Similar to `removeChannelLocal()` we only need a very simple `thread` to remove a `group` from our `ship` and we see it on line 303:
 
 ```
   function removeGroupLocal(group: string) {
@@ -18,7 +18,7 @@ Similar to `removeChannelLocal()` we only need a very simple function to remove 
   }
 ```
 
-We're following the pattern of turning out `group` back into a `Resource` using `resourceFromPath()` and then passing a `thread` its `ship` and `name` via the `deleteGroup()` formatting function.
+We're following the pattern of turning our `group` back into a `Resource` using `resourceFromPath()` and then passing a `thread` its `ship` and `name` via the `deleteGroup()` formatting function.
 
 ## UI
 

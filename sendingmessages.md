@@ -2,7 +2,7 @@
 
 ## Setting up State Variables
 
-We're using two state variables as we want to keep track of two things while we send messages. First we want to subscribe to a list of channel names (called `keys` in `graph-store`), and then we want to create a state variable that contains a `log` of incoming messages so that we can render them in our app.
+We're using two state variables here as we want to keep track of two things while we send messages. First we want to store a list of channel names (called `keys` in `graph-store`), and then we want to store a `log` of incoming messages so that we can render them in our app.
 
 ```
   const [log, setLog] = useState<string>(""); // State object for the log we keep of incoming messages for display
@@ -12,9 +12,9 @@ We're using two state variables as we want to keep track of two things while we 
 
 It's worth noting that we are storing the list of `keys` as an array of `Path`s. A `Path` is a string, for example `/ship/~zod/chat-name-777` and below we'll see how we can parse a `Path` to retrieve the information we need to send a message to the channel it represents.
 
-## Setting up Subscriptions
+## Logging Messages
 
-Let's skip down to line 136 to see subscription we make to retrieve messages sent in our ship. It has a callback function that we will look at next:
+Let's skip down to line 136 to see the subscription we make to retrieve messages sent in our ship. It has a callback function that we will look at next:
 
 ```
   // Now we use useEffect to establish our subscriptions to our ship. Notice that subscriptions are called directly on our Urbit object using
@@ -37,7 +37,7 @@ Let's skip down to line 136 to see subscription we make to retrieve messages sen
   }, [urb, sub, logHandler]); // And again here is what we're monitoring for changes
 ```
 
-Generally this should look familiar to you as we used a `subscription` to generate a list of `groups` in the last lesson. Same thing here but now we're subscribing on the `path` `/updates` and passing in a new function `logHandler` to parse the messages that come through.
+Generally this should look familiar to you as we used `subscribe` to generate a list of `groups` from `graph-store` in the last lesson. Same thing here but now we're subscribing on the `path` `/updates` and passing in a new function `logHandler` to parse the messages that come back.
 
 `logHandler` is defined on line 79:
 
@@ -68,15 +68,17 @@ Generally this should look familiar to you as we used a `subscription` to genera
   );
 ```
 
-Just like the last lesson we are using the `useCallback` Hook to pass in our formatting function. Notice that we declare the variable newNodes with the type Record consisting of a string and GraphNode as defined in `@urbit/api/dist/graph/types.d.ts`. We use `[]` notation to select the `nodes` key in the `message` object.
+Just like the last lesson we are using the `useCallback` Hook to pass in our handling function. Notice that we declare the variable `newNodes` with the type `Record` consisting of a `string` and the type `GraphNode` which is defined in `@urbit/api/dist/graph/types.d.ts`. We use `[""]` notation to select the `nodes` key in the `message` object.
 
-We then create an array from the `keys` in `newNodes` by using `Object.keys` and use the `.forEach()` method to get the `contents` of the message. Notice here that we type our `content` variable with the `Content` type which lives in the same place as `GraphNode`.
+We then create an array from the `keys` in `newNodes` by using `Object.keys` and pass an `index` variable into the `.forEach()` method. That allows us to to get the `contents` of the message from each entry in `newNodes`. Notice here that we type our `content` variable with the `Content` type which lives in the same file as `GraphNode`.
 
-We then use a series of `if` statements to determine what type of data is in our message as Landscape allows `mentions` `code` snippets, `url`s, and of course plain `text`. We'll dive into these more in future lessons.
+We then use a series of `if` statements to determine what type of data is in our message as Landscape allows `mentions` `code` snippets, `url`s, and of course plain `text`. We'll dive into each of these more in future lessons.
 
-And then finally, set use our `setLog` function to store the data in our `useState` variable. Ok great! Now whenever a message is sent to a channel in our ship we will see it displayed in our app.
+And then finally, set use our `setLog` function to store the `newMessage` data in our `useState` variable. Now whenever a message is sent to a channel in our ship we will see it displayed in our app.
 
-We'll need to make another `subscription` to `graph-store` in order to send messages. This time on `path` `/keys`, we do this on line 171:
+## Sending Messages
+
+We'll need to make another subscription to `graph-store` in order to send messages. This time on `path` `/keys`, we do this on line 171:
 
 ```
   // Another graph-store subscription pattern this time to pull the list of channels(chats) that our ship belongs to. Again I'm leaving the varialbe
@@ -113,13 +115,13 @@ Pretty much the same as the first one, but now our callback function is `handleK
   );
 ```
 
-It's much simpler than `logHandler` since we are just pushing `keys` into an array of `Path`s. Note that a `key` is typed as a `Resource` which is defined as an object consisting of a `name` and a `ship`. We're going to import and use the function `resrouceAsPath` so that we can store this as a single `Path` string. This is a UI decision I made to easily render a key as an item in a dropdown menu(we'll see this below). You may not need to do this depending on what you're building.
+It's much simpler than `logHandler` since we are just pushing `keys` into an array of `Path`s. Note that a `key` is typed as a `Resource` which is defined as an object consisting of a `name` and a `ship`. We're going to import and use the function `resrouceAsPath` so that we can store this as a single `Path` string. This is a UI decision I made to easily render a `key` as an item in a dropdown menu(we'll see this below). You may not need to do this depending on what you're building.
 
 Finally we use `setKeys` to store our array of `keys` in our state variable.
 
 ## Local Function
 
-Now let's look at how we format user input (collected in the UI described below) to send a message from our ship:
+Now let's look at how we format user input (collected in the UI described in the next section) to send a message from our `ship`:
 
 ```
   // Our function to send messages to a channel(chat) by the user in our React UI
@@ -137,19 +139,19 @@ Now let's look at how we format user input (collected in the UI described below)
   }
 ```
 
-We take a `message` and `key` as an argument, but then we need to do some extra formatting that we haven't seen yet. Messages in Urbit are typed as `Post`s, so we import the format function `createPost` and pass it our `ship` name as well as an object with our `message` assigned to a `text` key.
+We take a `message` and `key` as arguments, but then we need to do some extra formatting that we haven't seen yet. Messages in Urbit are typed as `Post`s, so we import the format function `createPost` and pass it our `ship` name as well as an object with our `message` assigned to a `text` key.
 
 Remember that we wanted our key typed as a `string` to include as an item in a drop down menu, so now we coerce it back into a `Resource` by importing and using the `resourceFromPath()` function.
 
-We then create a `thread` and need one more formatting function, this time `addPost`. If you look at the source of this function you can see that we will need to add a `~` to our ship name which we do manually. Now that our `Path` is a `Resource` again we can derive our `channel` name by using `keyResource.name`, and finally we pass in our newly created `post` variable.
+We then create a `thread` and need one more formatting function, this time `addPost`. If you look at the source of this function in `@urbit/api/dist/graph/lib.d.ts`, you can see that we will need to add a `~` to our ship name which we do here manually. Now that our `Path` is a `Resource` again we can derive our `channel` name by using `keyResource.name`, and finally we pass in our newly created `post` variable.
 
 ## UI
 
-Finally on line 542 we can look at the UI we render in order to collect this data from our user:
+Finally on line 542 we can see the UI we render in order to collect this data from our user:
 
 ```
     {/* Here we do the same as the channel input but for messages. This looks the same
-    as chat creation since all of the formatting is done in our functions above.
+    as chat creation since all of the formatting is done in our local functions above.
     We just need to present the user with a list of channels(chats) to choose and then an input field
     for their message */}
     <form
@@ -177,4 +179,4 @@ Finally on line 542 we can look at the UI we render in order to collect this dat
     </form>
 ```
 
-We've seen this UI pattern in the previous two lessons. It's worth noting that we can `map` over our `key` array and render each `key` as a string since we converted the `key` from a `Resource` to a `Path` in our callback function. So users select a chat from the drop down, enter their message and when they press send the variables are sent to `sendMessageLocal()` where they are formatted to a `thread` and sent to the proper chat. Our `logHandler` function above then renders these new messages to our app's UI.
+We've seen this UI pattern in the previous lesson. It's worth noting that we can `map` over our `key` array and render each `key` as a string since we converted the `key` from a `Resource` to a `Path` in our callback function. So users select a chat from the drop down, enter their message and when they press "Send Message" the variables are sent to `sendMessageLocal()` where they are formatted to a `thread` and sent to the proper chat. Our `logHandler` function above then renders these new messages to our app's UI as it receives them via the first subscription we set up in this section.

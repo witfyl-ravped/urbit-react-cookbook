@@ -101,9 +101,7 @@ Once inside the group you will have access the channel(chat) you created in the 
 
 To test this function start by adding a new channel under the Create Channel heading.
 
-Verify that it has been added by checking in Landscape. You can also test it by selecting it from the "Select a Channel" dropdown selector under the "Send Message" header.
-
-Now select your newly added channel from the "Select a Channel" dropdown under the "Remove Channel" header.
+Verify that it has been added by checking in Landscape. You can also test it by selecting it from the "Select a Channel" dropdown selector under the "Remove Channels" header. Go ahead and select it from this menu and click "Remove Channel."
 
 Confirm the pop and then verify the channel has been removed from both the drop down menus and your Landscape tab.
 
@@ -111,19 +109,15 @@ Confirm the pop and then verify the channel has been removed from both the drop 
 
 ## Removing Groups
 
-The reason you created a second channel in the example above is to show that removing a group will also remove its channels.
-
 Choose your group from "Select a Group" dropdown under the "Remove Group" header and click "Remove Group".
 
 Click OK and verify that the group and its tile has been removed from Landscape.
-
-Also verify that the channel it contained is no longer listed in either of the "Select a Channel" drop down menus.
 
 [Click here](https://github.com/witfyl-ravped/urbit-react-cookbook/blob/main/removinggroups.md) for a detailed walkthrough of the Inviting Members functions and UI
 
 ## Scrying Messages
 
-This function allows you to `scry` a variable number of recent texts from a given channel. To test this out go ahead and send a few messages to one of the channels you created. Bonus points if you send a few more from another ship that you added or invited
+This function allows you to `scry` a variable number of recent messages from a given channel. To test this out go ahead and send a few messages to one of the channels you created. Bonus points if you send a few more from another ship that you added or invited
 
 Now select this channel from the dropdown under "Scrying Messages"
 

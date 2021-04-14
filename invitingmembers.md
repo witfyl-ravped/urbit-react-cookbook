@@ -2,7 +2,7 @@
 
 ## Local Function
 
-Another simple example that doesn't require us to pull any information out of our `ship`. Line 375:
+Another simple example that just requires us to send a `thread` into our ship. Line 375:
 
 ```
   function inviteLocal(group: string, ship: string, description: string) {

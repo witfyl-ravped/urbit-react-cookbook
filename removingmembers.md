@@ -2,10 +2,10 @@
 
 ## Local Function
 
-Similar to Adding Members we only need a local function for this example. That is on line 290:
+Similar to Adding Members we only need a local function for this examplem, line 290:
 
 ```
-  // Our React function to remove members from a group. Requires the same formatting steps as addMembersLocal()
+  // Our local function to remove members from a group. Requires the same formatting steps as addMembersLocal()
   function removeMembersLocal(group: Path, ship: string) {
     if (!urb) return;
 
@@ -23,22 +23,22 @@ It's almost exactly the same as `addMembersLocal()` except that we send `urb.pok
 
 ## UI
 
-This is the most complex UI example in this lesson so I'm taking it as an opportunity to address, albeit briefly, functional components. In a full blown app each piece of UI will likely be it's own function component, likely in it's own separate file. This is a scaled down example but enough to understand functional components and why we'd want to use them.
+This is the most complex UI example in our example app so I'm taking it as an opportunity to address, albeit briefly, functional components. In a full blown app each piece of UI would likely be its own functional component, likely imported from its own separate file. This is a scaled down example, but enough to understand what functional components are and why we'd want to use them.
 
 Starting on line 329 we see:
 
 ```
 // We're using a functional component here to render the UI because removing members from groups requires a little extra logic
-// We want the user to select between groups to render a list of each groups members. We need the extra steps since the member list is derived from the group Path
-// This is different from our other functions since our user is creating an action based on pre-populated lists rather than their own text input
+// We want the user to select between groups to render a list of each group's members. We need the extra steps since the member list is derived from the group Paths
+// which a user can toggle between. Therefore lists will have to be rendered according to user input
 
   const RenderRemoveMembers = () => {
-    // Making this a functional component gives us access to the useState hook for free. We'll use this to populate lists of members from user input
+    // Making this a functional component gives us access to its own useState hook for free. We'll use this to populate lists of members from user input
     const [selectedGroup, setSelectedGroup] = useState("default");
 
 ```
 
-First thing to notice is that we're able to use `useState()` in our function. This is because React gives us access to Hooks in functional components allowing them to be self contained, self-updating, sovereign pieces of UI. We will use this functionality to keep track of which group our user has selected and use that selection to render out the list of members belonging to that group. Our user can then select from the list of members and choose one to remove.
+First thing to notice is that we're able to use `useState()` in our function. This is because React gives us access to Hooks in functional components allowing them to be self contained, self updating, sovereign pieces of UI. We will use this functionality to keep track of which group our user has selected and use that selection to render out the list of members belonging to that group. Our user can then select from the list of members and choose one to remove.
 
 Continuing on:
 
