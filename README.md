@@ -51,6 +51,8 @@ After clicking OK in the alert window navigate to your Landscape page to confirm
 
 ## Sending Messages
 
+<b>NOTE:</b> We are still waiting on an update to `@urbit/http-api` that uses the new `group-update` versioning syntax. Until then the steps below will not work.
+
 Again back in the React app, select a chat from the drop-down menu under "Send Message" and enter some text. Upon clicking the "Send Message" button you should once again receive a confirmation alert.
 
 Your message should now appear at the top of the React app. You can navigate back to your Landscape window to see the message you just sent from React displayed in the newly created channel.
