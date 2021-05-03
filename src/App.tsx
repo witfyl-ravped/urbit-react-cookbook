@@ -54,7 +54,7 @@ const App = () => {
   const [urb, setUrb] = useState<UrbitInterface | undefined>(); // Stores our Urbit connection. Notice we declare the type as UrbitInterface
   const [sub, setSub] = useState<number | undefined>(); // Currently managing all subscriptions with one state object. This will most likely change with future api fixes
   const [log, setLog] = useState<string>(""); // State object for the log we keep of incoming messages for display
-  const [groups, setGroups] = useState<GroupWName[]>([]); // State object to keep track of the list of groups our ship belongs to
+  const [groups, setGroups] = useState<GroupWName[] | any>([]); // State object to keep track of the list of groups our ship belongs to
   const [keys, setKeys] = useState<Path[]>([]); // Same as above but for channels(chats). I'm keeping the variable name 'keys' as that is the term used in graph-store
 
   // We use useEffect to check if the user already has log in credentials stored in localStorage from a previous session. If so then we set our loggedIn
@@ -356,7 +356,7 @@ const App = () => {
           <option key="default" value="default">
             Select a Group
           </option>
-          {groups.map((group, index) => (
+          {groups.map((group: any, index: any) => (
             <option key={group.name} value={index}>
               {group.name}
             </option>
@@ -367,7 +367,7 @@ const App = () => {
         <select id="member" name="member">
           <option>Select a Member</option>
           {groups[0] && selectedGroup !== "default"
-            ? groups[parseInt(selectedGroup)].group.members.map((member) => {
+            ? groups[parseInt(selectedGroup)].group.members.map((member: any) => {
                 return <option value={member}>{member}</option>;
               })
             : null}
@@ -534,7 +534,7 @@ const App = () => {
                 {/* Here we leverage our groups state variable to render a dropdown list of available groups to create channels(chats) in */}
                 <select id="group" name="group">
                   <option>Select a Group</option>
-                  {groups.map((group) => (
+                  {groups.map((group: any) => (
                     <option value={group.name}>{group.name}</option>
                   ))}
                 </select>
@@ -614,7 +614,7 @@ const App = () => {
                 {/* Here we leverage our groups state variable to render a dropdown list of available groups that the user can add members to */}
                 <select id="group" name="group">
                   <option>Select a Group</option>
-                  {groups.map((group) => (
+                  {groups.map((group: any) => (
                     <option value={group.name}>{group.name}</option>
                   ))}
                 </select>
@@ -650,7 +650,7 @@ const App = () => {
               >
                 <select id="group" name="group">
                   <option>Select a Group</option>
-                  {groups.map((group) => (
+                  {groups.map((group: any) => (
                     <option value={group.name}>{group.name}</option>
                   ))}
                 </select>
@@ -719,7 +719,7 @@ const App = () => {
               >
                 <select id="group" name="group">
                   <option>Select a Group</option>
-                  {groups.map((group) => (
+                  {groups.map((group: any) => (
                     <option value={group.name}>{group.name}</option>
                   ))}
                 </select>
