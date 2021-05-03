@@ -42,7 +42,7 @@ Skipping down to line 156 we see:
   }, [urb, sub, handleGroups]);
 ```
 
-See the breakout lesson on Hooks for more details on `useEffect`, but for now you just need to know that `useEffect` will run actions after the initial render is complete. The initial render will create our state instance of `urb` described in the [Logging In](https://github.com/witfyl-ravped/urbit-react-cookbook/blob/main/logginging.md) lesson and now we can leverage `useEffect` to setup a subscription to it.
+See the breakout lesson on Hooks for more details on `useEffect` (breakout lessons forthcoming), but for now you just need to know that `useEffect` will run actions after the initial render is complete. The initial render will create our state instance of `urb` described in the [Logging In](https://github.com/witfyl-ravped/urbit-react-cookbook/blob/main/logginging.md) lesson and now we can leverage `useEffect` to setup a subscription to it.
 
 We confirm it was setup properly by running the `if(!urb)` check, then proceed to call `.subscribe()` directly on our `urb`. By digging into the types library in `@urbit/http` we see that `subscribe` takes a `SubscriptionRequestInterface` (defined in `@urbit/http-api/dist/types.d.ts` as an `app` and a `path` along with the ability to log `err` and `quit` return messages as well as take a callback function via `event`).
 

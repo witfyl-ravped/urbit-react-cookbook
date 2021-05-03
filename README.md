@@ -36,12 +36,16 @@ Verfiy these commands worked by running `+cors-registry` again.
 
 ## Creating Groups
 
+<i>How to call `threads`</i>
+
 Start by adding a group using the form on the left of the React app. Enter a Group Name, Group Description and press "Create Group." Your browser will confirm the successful creation with an alert window.
 After clicking OK in the alert window navigate to your Landscape tab to confirm that the group was created and it's tile added.
 
 [Click here](https://github.com/witfyl-ravped/urbit-react-cookbook/blob/main/creatinggroups.md) for a detailed walkthrough of the Creating Groups functions and UI
 
 ## Creating Channels
+
+<i>How to create and maintain `subscriptions`</i>
 
 Back in the React app, fill in the middle "Create Channel" inputs. Select your newly created group from the drop-down and enter a Chat Name and Description and press "Create Channel". This should also be confirmed by a window alert upon success.
 
@@ -50,6 +54,8 @@ After clicking OK in the alert window navigate to your Landscape page to confirm
 [Click here](https://github.com/witfyl-ravped/urbit-react-cookbook/blob/main/creatingchannels.md) for a detailed walkthrough of the Creating Channels functions and UI
 
 ## Sending Messages
+
+<i>Calling `thread`s and managing `subscriptions`</i>
 
 <b>NOTE:</b> <i>We are still waiting on an update to `@urbit/http-api` that uses the new `group-update` versioning syntax. Until then the steps below will not work.</i>
 
@@ -63,6 +69,8 @@ Notice that you can send a message to the channel from Landscape and that it wil
 
 ## Adding Members
 
+<i>How to send a `poke`</i>
+
 In this input select a Group that you have created from the dropdown menu and enter a ship with '~' prefix. Then press "Add Member"
 
 Confirm that the member has been added via Group info in Landscape. You can find this information be clicking on the Group tile. Then the gear icon in the top left corner of the group. From there click on Participants and confirm the ship you added is listed
@@ -73,6 +81,8 @@ Try adding a few different ships
 
 ## Removing Members
 
+<i>Using `poke`s</i>
+
 First select one of the groups you created from the "Select a Group" drop down in this section
 
 After selecting a group the list of members will auto-populate in the "Select a Member" dropdown. Select a member from this list
@@ -82,6 +92,8 @@ Now click "Remove Member" and then confirm that this user was indeed removed via
 [Click here](https://github.com/witfyl-ravped/urbit-react-cookbook/blob/main/removingmembers.md) for a detailed walkthrough of the Removing Members functions and UI
 
 ## Inviting Members
+
+<i>Using `thread`s</i>
 
 To fully test this function we recommend booting another fake ship on your local network. Follow the instructions in the introduction to this guide for support in creating and booting fake ships. Call this second one `~mus`
 
@@ -101,6 +113,8 @@ Once inside the group you will have access the channel(chat) you created in the 
 
 ## Removing Channels
 
+<i>Using `thread`s</i>
+
 To test this function start by adding a new channel under the Create Channel heading.
 
 Verify that it has been added by checking in Landscape. You can also test it by selecting it from the "Select a Channel" dropdown selector under the "Remove Channels" header. Go ahead and select it from this menu and click "Remove Channel."
@@ -111,6 +125,8 @@ Confirm the pop and then verify the channel has been removed from both the drop 
 
 ## Removing Groups
 
+<i>Using `thread`s</i>
+
 Choose your group from "Select a Group" dropdown under the "Remove Group" header and click "Remove Group".
 
 Click OK and verify that the group and its tile has been removed from Landscape.
@@ -118,6 +134,8 @@ Click OK and verify that the group and its tile has been removed from Landscape.
 [Click here](https://github.com/witfyl-ravped/urbit-react-cookbook/blob/main/removinggroups.md) for a detailed walkthrough of the Inviting Members functions and UI
 
 ## Scrying Messages
+
+<i>How to `scry`</i>
 
 This function allows you to `scry` a variable number of recent messages from a given channel. To test this out go ahead and send a few messages to one of the channels you created. Bonus points if you send a few more from another ship that you added or invited
 

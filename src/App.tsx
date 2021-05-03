@@ -34,8 +34,15 @@ const createApi = (host: string, code: string) =>
     (): UrbitInterface => {
       const urb = new Urbit(host, code);
       urb.ship = "zod";
+      // urb
+      //   .connect()
+      //   .then((response) => alert("success").catch((err) => console.log(err)));
+      try {
+        urb.connect();
+      } catch (err) {
+        console.log(err);
+      }
       urb.onError = (message) => console.log(message);
-      urb.connect();
       return urb;
     }
   );
